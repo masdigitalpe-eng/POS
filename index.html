@@ -369,28 +369,34 @@
     <div id="modal-granel" class="fixed inset-0 bg-slate-900/70 hidden z-[70] flex justify-center items-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm overflow-hidden modal-pop border-4 border-orange-100">
             <div class="bg-orange-50 p-6 flex justify-between items-center border-b-2 border-orange-100">
-                <h3 class="text-2xl font-black text-orange-800 tracking-tight"><i class="fas fa-balance-scale mr-2"></i> Pesar</h3>
+                <h3 class="text-2xl font-black text-orange-800 tracking-tight"><i class="fas fa-calculator mr-2"></i> Calculadora Venta</h3>
                 <button onclick="cerrarModal('modal-granel')" class="text-orange-400 hover:text-orange-600 bg-white rounded-full p-2 shadow-sm"><i class="fas fa-times text-xl"></i></button>
             </div>
             <div class="p-8 text-center">
                 <h4 class="text-3xl font-black text-slate-800 mb-4 leading-none" id="granel-nombre">Producto</h4>
                 
-                <div class="flex items-center justify-center bg-orange-100 rounded-2xl p-3 mb-6 border border-orange-200">
-                    <span class="text-orange-800 font-black text-sm mr-2">Precio x Kg: S/</span>
-                    <input type="number" id="granel-precio-edit" class="w-24 bg-white border-2 border-orange-300 font-black text-xl text-orange-600 p-2 rounded-xl text-center focus:outline-none focus:border-orange-500" oninput="calcularTotalGranel()">
+                <div class="flex items-center justify-between bg-orange-100 rounded-2xl p-3 mb-6 border border-orange-200">
+                    <span class="text-orange-800 font-black text-sm">Precio Unitario S/:</span>
+                    <input type="number" id="granel-precio-edit" class="w-24 bg-white border-2 border-orange-300 font-black text-xl text-orange-600 p-2 rounded-xl text-center focus:outline-none focus:border-orange-500" oninput="onInputPrecio()">
                 </div>
 
-                <label class="block text-left text-sm font-black text-slate-500 uppercase tracking-widest mb-3">Peso en Balanza (Kg/Gramos):</label>
-                <input type="number" id="granel-cantidad" step="0.01" class="w-full border-4 border-orange-200 p-5 rounded-2xl text-6xl text-center font-black focus:outline-none focus:border-orange-500 text-slate-800 mb-6 shadow-inner" placeholder="0.00" oninput="calcularTotalGranel()">
-                <input type="hidden" id="granel-id">
-                
-                <div class="mt-4 p-5 bg-slate-800 rounded-2xl shadow-xl">
-                    <p class="text-xs font-black uppercase tracking-widest text-brand-400 mb-1">Subtotal a cobrar</p>
-                    <p class="text-5xl font-black text-white tracking-tighter" id="granel-total-calculado">S/ 0.00</p>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-left text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Cantidad</label>
+                        <input type="number" id="granel-cantidad" step="0.01" class="w-full border-4 border-orange-200 p-4 rounded-xl text-2xl text-center font-black focus:outline-none focus:border-orange-500 text-slate-800 shadow-inner" placeholder="0" oninput="onInputCantidad()">
+                    </div>
+                    <div>
+                        <label class="block text-left text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Total (S/)</label>
+                        <input type="number" id="granel-total-edit" step="0.10" class="w-full border-4 border-orange-200 p-4 rounded-xl text-2xl text-center font-black focus:outline-none focus:border-orange-500 text-slate-800 shadow-inner" placeholder="0.00" oninput="onInputMonto()">
+                    </div>
                 </div>
+                
+                <button onclick="ajustarPrecioPorPromo()" class="text-xs font-black text-blue-600 bg-blue-50 border border-blue-200 px-4 py-3 rounded-lg hover:bg-blue-100 transition-colors mb-2 w-full shadow-sm"><i class="fas fa-magic mr-1"></i> Cuadrar precio por Promo Especial</button>
+
+                <input type="hidden" id="granel-id">
             </div>
             <div class="bg-white p-6 border-t-2 border-slate-100">
-                <button onclick="confirmarGranel()" class="w-full py-5 bg-orange-500 text-white rounded-2xl hover:bg-orange-600 font-black text-2xl shadow-[0_10px_25px_rgba(249,115,22,0.4)] transition-transform hover:scale-105"><i class="fas fa-plus mr-2"></i> Añadir a Canasta</button>
+                <button onclick="confirmarGranel()" class="w-full py-5 bg-orange-500 text-white rounded-2xl hover:bg-orange-600 font-black text-2xl shadow-[0_10px_25px_rgba(249,115,22,0.4)] transition-transform hover:scale-105"><i class="fas fa-check mr-2"></i> Añadir a Canasta</button>
             </div>
         </div>
     </div>
@@ -772,6 +778,116 @@
             renderizarUICompleta(); configurarLectorBarras();
         }
 
+        // --- SOLUCIÓN ERROR DE CATEGORÍAS ---
+        function generarFiltrosCategorias() {
+            const cont = document.getElementById('pos-categorias');
+            const selInv = document.getElementById('filtro-categoria-inv');
+            if(!cont || !selInv) return;
+
+            cont.innerHTML = `<button onclick="filtrarCatPOS('Todas')" class="cat-btn bg-brand-500 text-white px-4 py-2 rounded-full font-black text-xs whitespace-nowrap shadow-sm transition-colors">Todas</button>`;
+            selInv.innerHTML = '<option value="">Todas las categorías</option>';
+
+            categoriasUnicas.forEach(cat => {
+                cont.innerHTML += `<button onclick="filtrarCatPOS('${cat}')" class="cat-btn bg-white text-slate-500 border border-slate-200 px-4 py-2 rounded-full font-black text-xs whitespace-nowrap hover:bg-slate-50 transition-colors">${cat}</button>`;
+                selInv.innerHTML += `<option value="${cat}">${cat}</option>`;
+            });
+        }
+
+        function filtrarCatPOS(cat) {
+            categoriaActivaPOS = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if(btn.innerText === cat) btn.className = 'cat-btn bg-brand-500 text-white px-4 py-2 rounded-full font-black text-xs whitespace-nowrap shadow-sm transition-colors';
+                else btn.className = 'cat-btn bg-white text-slate-500 border border-slate-200 px-4 py-2 rounded-full font-black text-xs whitespace-nowrap hover:bg-slate-50 transition-colors';
+            });
+            renderizarProductosRapidos();
+        }
+
+        function renderizarProductosRapidos() {
+            const contenedor = document.getElementById('pos-productos-rapidos');
+            if(!contenedor) return;
+            contenedor.innerHTML = '';
+            
+            let favoritos = inventario.filter(p => p.favorito);
+            if(categoriaActivaPOS !== 'Todas') favoritos = favoritos.filter(p => p.categoria === categoriaActivaPOS);
+            
+            favoritos.sort((a, b) => {
+                if (a.granel && !b.granel) return -1;
+                if (!a.granel && b.granel) return 1;
+                return a.nombre.localeCompare(b.nombre);
+            });
+            
+            if(favoritos.length === 0) {
+                contenedor.innerHTML = '<div class="col-span-full text-center text-slate-400 py-4 font-bold text-sm">No hay favoritos en esta categoría.</div>'; return;
+            }
+
+            favoritos.forEach(prod => {
+                const btnContainer = document.createElement('div');
+                btnContainer.className = 'relative group';
+
+                const btn = document.createElement('button');
+                btn.className = 'w-full bg-white border-2 border-slate-100 p-3 rounded-2xl flex flex-col items-center justify-center hover:border-brand-300 hover:shadow-md shadow-sm h-32 transition-all overflow-hidden relative';
+                btn.onclick = () => procesarAgregadoCarrito(prod);
+                
+                const colorBg = prod.granel ? 'bg-orange-50' : 'bg-slate-50';
+                const colorIcon = prod.granel ? 'text-orange-500' : 'text-slate-400';
+                const icono = prod.granel ? 'fa-balance-scale' : 'fa-box';
+                const catTag = prod.categoria ? `<span class="absolute bottom-1 left-0 w-full text-center text-[9px] font-black text-slate-300 uppercase tracking-widest truncate px-1">${prod.categoria}</span>` : '';
+
+                btn.innerHTML = `
+                    <div class="absolute top-0 right-0 bg-brand-500 text-white text-xs font-black px-2 py-1 rounded-bl-xl z-10">${fmtM(prod.precio)}</div>
+                    <div class="w-12 h-12 rounded-full ${colorBg} flex items-center justify-center mb-2 shadow-inner"><i class="fas ${icono} text-2xl ${colorIcon}"></i></div>
+                    <span class="text-xs font-black text-slate-700 text-center leading-tight line-clamp-2 px-1 relative z-10">${prod.nombre}</span>
+                    ${catTag}
+                `;
+
+                // Botón edición rápida
+                const btnEdit = document.createElement('button');
+                btnEdit.className = 'absolute top-2 left-2 bg-blue-500 text-white hover:bg-blue-600 w-8 h-8 rounded-full shadow-lg flex items-center justify-center border-2 border-white opacity-90 md:opacity-0 group-hover:opacity-100 transition-all z-20 transform hover:scale-110';
+                btnEdit.onclick = (e) => { e.stopPropagation(); abrirEdicionRapida(prod.id); };
+                btnEdit.innerHTML = '<i class="fas fa-pen text-xs"></i>';
+
+                btnContainer.appendChild(btn); btnContainer.appendChild(btnEdit);
+                contenedor.appendChild(btnContainer);
+            });
+        }
+
+        function abrirEdicionRapida(id) {
+            const prod = inventario.find(p => p.id === id); if(!prod) return;
+            document.getElementById('edicion-rapida-id').value = prod.id;
+            document.getElementById('edicion-rapida-nombre').innerText = prod.nombre;
+            document.getElementById('edicion-rapida-costo').innerText = fmtM(prod.costo);
+            document.getElementById('edicion-rapida-precio').value = prod.precio;
+            calcularGananciaRapida();
+            abrirModal('modal-edicion-rapida');
+            setTimeout(() => { const i = document.getElementById('edicion-rapida-precio'); i.focus(); i.select(); }, 100);
+        }
+        
+        function calcularGananciaRapida() {
+            const id = parseInt(document.getElementById('edicion-rapida-id').value);
+            const prod = inventario.find(p => p.id === id);
+            if(!prod) return;
+            const nPrecio = parseFloat(document.getElementById('edicion-rapida-precio').value) || 0;
+            const tGanancia = document.getElementById('edicion-rapida-ganancia');
+            const gan = nPrecio - prod.costo;
+            
+            tGanancia.innerText = (gan >= 0 ? '+ ' : '- ') + fmtM(Math.abs(gan));
+            if(gan < 0) { tGanancia.classList.replace('text-green-700', 'text-red-600'); tGanancia.parentElement.classList.replace('bg-green-50', 'bg-red-50'); }
+            else { tGanancia.classList.replace('text-red-600', 'text-green-700'); tGanancia.parentElement.classList.replace('bg-red-50', 'bg-green-50'); }
+        }
+
+        function guardarEdicionRapida() {
+            const id = parseInt(document.getElementById('edicion-rapida-id').value);
+            const nuevoP = parseFloat(document.getElementById('edicion-rapida-precio').value);
+            if(nuevoP > 0) {
+                const prod = inventario.find(p => p.id === id);
+                prod.precio = nuevoP;
+                renderizarUICompleta();
+                cerrarModal('modal-edicion-rapida');
+                uiAlert('Precio actualizado', 'success');
+                enviarDatosAGoogleSheets('producto_actualizado', prod);
+            } else uiAlert('Precio inválido', 'error');
+        }
+
         // --- MANEJO DE UI Y TABS ---
         function cambiarTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -861,27 +977,76 @@
         }
 
         function abrirModalGranel(producto) {
-            document.getElementById('granel-id').value = producto.id; document.getElementById('granel-nombre').innerText = producto.nombre;
-            document.getElementById('granel-precio-edit').value = producto.precio; document.getElementById('granel-cantidad').value = '';
-            document.getElementById('granel-total-calculado').innerText = 'S/ 0.00'; abrirModal('modal-granel');
+            document.getElementById('granel-id').value = producto.id; 
+            document.getElementById('granel-nombre').innerText = producto.nombre;
+            document.getElementById('granel-precio-edit').value = producto.precio; 
+            document.getElementById('granel-cantidad').value = '';
+            document.getElementById('granel-total-edit').value = ''; 
+            abrirModal('modal-granel');
             
             const inputCant = document.getElementById('granel-cantidad');
             inputCant.onkeydown = (e) => { if(e.key === 'Enter') { e.preventDefault(); confirmarGranel(); } };
             setTimeout(() => inputCant.focus(), 100);
         }
 
-        function calcularTotalGranel() {
-            const cant = parseFloat(document.getElementById('granel-cantidad').value) || 0; const precEdit = parseFloat(document.getElementById('granel-precio-edit').value) || 0;
-            document.getElementById('granel-total-calculado').innerText = fmtM(cant * precEdit);
+        // --- REDONDEO Y LÓGICA DE CALCULADORA GRANEL ---
+        function redondearSubtotal(monto) {
+            return Math.ceil(monto * 10) / 10;
+        }
+
+        function onInputCantidad() {
+            const cant = parseFloat(document.getElementById('granel-cantidad').value) || 0;
+            const prec = parseFloat(document.getElementById('granel-precio-edit').value) || 0;
+            if (cant > 0 && prec > 0) {
+                document.getElementById('granel-total-edit').value = redondearSubtotal(cant * prec).toFixed(2);
+            } else {
+                document.getElementById('granel-total-edit').value = '';
+            }
+        }
+
+        function onInputMonto() {
+            const total = parseFloat(document.getElementById('granel-total-edit').value) || 0;
+            const prec = parseFloat(document.getElementById('granel-precio-edit').value) || 0;
+            if (total > 0 && prec > 0) {
+                document.getElementById('granel-cantidad').value = (total / prec).toFixed(2);
+            } else {
+                document.getElementById('granel-cantidad').value = '';
+            }
+        }
+
+        function onInputPrecio() {
+            onInputCantidad(); 
+        }
+
+        function ajustarPrecioPorPromo() {
+            const cant = parseFloat(document.getElementById('granel-cantidad').value) || 0;
+            const total = parseFloat(document.getElementById('granel-total-edit').value) || 0;
+            if(cant > 0 && total > 0) {
+                const nuevoPrecio = (total / cant).toFixed(4);
+                document.getElementById('granel-precio-edit').value = nuevoPrecio;
+                uiAlert("Precio ajustado por promoción a S/ " + parseFloat(nuevoPrecio).toFixed(2), "info");
+            } else {
+                uiAlert("Ingresa cantidad y total para cuadrar", "error");
+            }
         }
 
         function confirmarGranel() {
-            const id = parseInt(document.getElementById('granel-id').value); const cant = parseFloat(document.getElementById('granel-cantidad').value); const precEdit = parseFloat(document.getElementById('granel-precio-edit').value);
-            if (!cant || cant <= 0 || !precEdit || precEdit <= 0) { uiAlert('Ingrese peso y precio válido', 'error'); return; }
+            const id = parseInt(document.getElementById('granel-id').value); 
+            const cant = parseFloat(document.getElementById('granel-cantidad').value); 
+            const precEdit = parseFloat(document.getElementById('granel-precio-edit').value);
+            const totalEdit = parseFloat(document.getElementById('granel-total-edit').value);
+
+            if (!cant || cant <= 0 || !precEdit || precEdit <= 0) { uiAlert('Ingrese datos válidos', 'error'); return; }
+            
             const productoOriginal = inventario.find(p => p.id === id);
             if (productoOriginal) {
-                const productoVenta = {...productoOriginal, precio: precEdit}; agregarAlCarrito(productoVenta, cant);
-                document.getElementById('pos-search').value = ''; cerrarModal('modal-granel'); setTimeout(() => document.getElementById('pos-search').focus(), 100);
+                // Si alteraron el precio manualmente para una promo
+                const precioFinal = totalEdit > 0 ? (totalEdit / cant) : precEdit;
+                const productoVenta = {...productoOriginal, precio: precioFinal}; 
+                agregarAlCarrito(productoVenta, cant);
+                document.getElementById('pos-search').value = ''; 
+                cerrarModal('modal-granel'); 
+                setTimeout(() => document.getElementById('pos-search').focus(), 100);
             }
         }
 
@@ -909,9 +1074,13 @@
             contenedor.innerHTML = ''; btnCobrar.disabled = false; btnCobrar.className = 'w-full bg-brand-600 text-white py-5 rounded-2xl font-black text-3xl flex justify-center items-center shadow-[0_10px_25px_rgba(16,185,129,0.4)] transition-transform hover:scale-105 tracking-tight';
 
             [...carrito].reverse().forEach(item => {
-                const subtotal = item.precio * item.cantidad; total += subtotal;
+                // REDONDEO A 10 CÉNTIMOS OBLIGATORIO EN CADA SUBTOTAL
+                let subtotal = item.precio * item.cantidad; 
+                subtotal = redondearSubtotal(subtotal);
+                total += subtotal;
+                
                 const txtCant = Number.isInteger(item.cantidad) ? item.cantidad : item.cantidad.toFixed(2);
-                contenedor.innerHTML += `<div class="flex justify-between items-center p-4 mb-3 bg-white rounded-2xl shadow-sm border-2 border-slate-100 transform transition-all hover:scale-[1.01] hover:border-brand-200"><div class="flex-1 pr-3 border-r-2 border-dashed border-slate-100"><p class="font-black text-base text-slate-800 leading-tight mb-1">${item.nombre}</p><p class="text-[10px] font-black text-brand-500 uppercase tracking-widest">${fmtM(item.precio)} ${item.granel ? 'x Kg' : 'c/u'}</p></div><div class="flex flex-col items-end gap-2 pl-3"><span class="font-black text-xl text-slate-800 tracking-tight">${fmtM(subtotal)}</span><div class="flex bg-slate-50 rounded-xl p-1 border-2 border-slate-200 shadow-inner"><button onclick="cambiarCantidadCarrito(${item.id}, ${item.precio}, -1)" class="w-8 h-8 bg-white text-slate-600 font-black rounded-lg shadow-sm hover:text-red-500 hover:bg-red-50 transition-colors">-</button><span class="w-10 flex items-center justify-center font-black text-sm">${txtCant}</span><button onclick="cambiarCantidadCarrito(${item.id}, ${item.precio}, 1)" class="w-8 h-8 bg-white text-slate-600 font-black rounded-lg shadow-sm hover:text-brand-500 hover:bg-brand-50 transition-colors">+</button></div></div></div>`;
+                contenedor.innerHTML += `<div class="flex justify-between items-center p-4 mb-3 bg-white rounded-2xl shadow-sm border-2 border-slate-100 transform transition-all hover:scale-[1.01] hover:border-brand-200"><div class="flex-1 pr-3 border-r-2 border-dashed border-slate-100"><p class="font-black text-base text-slate-800 leading-tight mb-1">${item.nombre}</p><p class="text-[10px] font-black text-brand-500 uppercase tracking-widest">${fmtM(item.precio)} ${item.granel ? 'x Kg/Und' : 'c/u'}</p></div><div class="flex flex-col items-end gap-2 pl-3"><span class="font-black text-xl text-slate-800 tracking-tight">${fmtM(subtotal)}</span><div class="flex bg-slate-50 rounded-xl p-1 border-2 border-slate-200 shadow-inner"><button onclick="cambiarCantidadCarrito(${item.id}, ${item.precio}, -1)" class="w-8 h-8 bg-white text-slate-600 font-black rounded-lg shadow-sm hover:text-red-500 hover:bg-red-50 transition-colors">-</button><span class="w-10 flex items-center justify-center font-black text-sm">${txtCant}</span><button onclick="cambiarCantidadCarrito(${item.id}, ${item.precio}, 1)" class="w-8 h-8 bg-white text-slate-600 font-black rounded-lg shadow-sm hover:text-brand-500 hover:bg-brand-50 transition-colors">+</button></div></div></div>`;
             });
             totalUI.innerText = fmtM(total); contenedor.scrollTop = 0;
         }
