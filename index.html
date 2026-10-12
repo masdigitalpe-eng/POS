@@ -928,24 +928,27 @@
                 gain2.connect(audioCtx.destination);
                 osc2.start(audioCtx.currentTime + 0.1);
                 osc2.stop(audioCtx.currentTime + 0.4);
-                
-            } catch(e) { console.log('Audio no soportado', e); }
+            } catch(e) {
+                console.error("Audio desactivado o bloqueado", e);
+            }
         }
 
+        // Redondeo Global Matemático (Ej. 14.24 -> 14.30)
         function redondearSubtotal(monto) {
             return Math.ceil(monto * 10) / 10;
         }
 
         window.onload = function() {
-            const savedMov = localStorage.getItem('b_mov'); if(savedMov) movimientosCaja = JSON.parse(savedMov);
+            // Ya NO cargamos el historial (b_mov) del almacenamiento local. Todo vendrá de la Base de Datos.
+            // Solo las ventas pausadas (carritos a medias) se quedan en local porque aún no son ventas reales confirmadas.
             const savedPausadas = localStorage.getItem('b_pausadas'); if(savedPausadas) ventasPausadas = JSON.parse(savedPausadas);
 
             setTimeout(() => {
                 if(!appIniciada) {
-                    document.getElementById('loading-text').innerText = "Demora en Google. Abriendo modo local...";
+                    document.getElementById('loading-text').innerText = "Demora en Google. Obteniendo datos...";
                     arrancarAppOffline();
                 }
-            }, 6000);
+            }, 8000); // Le damos 8 segundos de espera para descargar los historiales de ventas que suelen pesar más
 
             if (SCRIPT_URL && SCRIPT_URL !== 'TU_NUEVO_LINK_DE_APPS_SCRIPT_AQUI') {
                 fetch(SCRIPT_URL + "?accion=obtenerDatosIniciales")
@@ -955,8 +958,14 @@
                             uiAlert("Error desde Excel: " + dbRemota.error, 'error');
                             arrancarAppOffline(); return;
                         }
+                        
+                        // CARGAMOS ABSOLUTAMENTE TODO DE LA BASE DE DATOS (GOOGLE SHEETS)
                         if(dbRemota && dbRemota.inventario) inventario = dbRemota.inventario;
                         if(dbRemota && dbRemota.clientes) clientes = dbRemota.clientes;
+                        
+                        // NUEVO: Cargar el historial de caja (ventas, egresos, abonos) directo desde la BD
+                        if(dbRemota && dbRemota.movimientos) movimientosCaja = dbRemota.movimientos;
+
                         arrancarAppOffline();
                     })
                     .catch(error => { console.error("Fallo backend:", error); arrancarAppOffline(); });
