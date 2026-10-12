@@ -462,7 +462,7 @@
                         </div>
                         
                         <div class="mt-5 max-w-xs mx-auto p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl text-center hidden border border-blue-200 shadow-sm" id="caja-vuelto">
-                            <p class="text-blue-800 font-black mb-1 uppercase tracking-widest text-xs">VUELTO A ENTREGAR:</p>
+                            <p class="text-blue-800 font-black mb-1 uppercase tracking-widest text-xs" id="vuelto-label">VUELTO A ENTREGAR:</p>
                             <p class="text-5xl font-black text-blue-600 drop-shadow-sm" id="monto-vuelto">S/ 0.00</p>
                         </div>
                     </div>
@@ -582,6 +582,33 @@
         </div>
     </div>
 
+    <!-- Modal Editar Movimiento de Caja -->
+    <div id="modal-editar-movimiento" class="fixed inset-0 bg-slate-900/60 hidden z-[200] flex justify-center items-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden modal-pop border-4 border-slate-200">
+            <div class="bg-slate-50 p-5 flex justify-between items-center border-b-2 border-slate-200">
+                <h3 class="text-xl font-black text-slate-800"><i class="fas fa-edit text-blue-500 mr-2"></i> Editar Historial</h3>
+                <button onclick="cerrarModal('modal-editar-movimiento')" class="text-slate-400 hover:text-red-500 bg-white rounded-full p-2"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <input type="hidden" id="edit-mov-id">
+                <div>
+                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Tipo de Movimiento</label>
+                    <input type="text" id="edit-mov-tipo" class="w-full border-2 border-slate-200 p-3 rounded-xl font-bold bg-slate-100 text-slate-500" readonly>
+                </div>
+                <div>
+                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Detalles (Productos/Notas)</label>
+                    <textarea id="edit-mov-detalle" class="w-full border-2 border-slate-200 p-3 rounded-xl font-bold bg-white focus:border-blue-500 focus:outline-none text-sm" rows="3"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-3" id="edit-mov-montos-container">
+                    <!-- Inputs de monto inyectados dinámicamente -->
+                </div>
+            </div>
+            <div class="bg-white p-5 border-t-2 border-slate-100">
+                <button onclick="guardarEdicionMovimiento()" class="w-full py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-black text-lg shadow-[0_5px_15px_rgba(37,99,235,0.4)]">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Detalles Cliente (Perfil y Pagos Parciales) -->
     <div id="modal-detalle-cliente" class="fixed inset-0 bg-slate-900/70 hidden z-[140] flex justify-center items-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh] modal-pop border-4 border-blue-100">
@@ -590,7 +617,7 @@
                 <button onclick="cerrarModal('modal-detalle-cliente')" class="text-blue-400 hover:text-blue-600 bg-white rounded-full p-2"><i class="fas fa-times text-xl"></i></button>
             </div>
             <div class="p-6 overflow-y-auto">
-                <div class="text-center mb-6">
+                <div class="text-center mb-6 relative">
                     <div class="w-20 h-20 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-3 font-black shadow-inner border-2 border-white" id="detalle-cli-inicial">A</div>
                     <h2 class="text-2xl font-black text-slate-800 mb-1" id="detalle-cli-nombre">Nombre</h2>
                     <p class="text-slate-500 font-bold text-sm"><i class="fab fa-whatsapp text-green-500"></i> <span id="detalle-cli-tel">999999999</span></p>
@@ -599,9 +626,10 @@
                 </div>
                 
                 <div class="flex gap-4 mb-6">
-                    <div class="flex-1 bg-red-50 p-4 rounded-2xl border-2 border-red-100 text-center shadow-inner">
-                        <p class="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">Deuda Actual</p>
-                        <p class="text-3xl font-black text-red-600" id="detalle-cli-deuda">S/ 0.00</p>
+                    <div class="flex-1 p-4 rounded-2xl border-2 text-center shadow-inner" id="detalle-cli-deuda-container">
+                        <p class="text-[10px] font-black uppercase tracking-widest mb-1" id="detalle-cli-deuda-label">Deuda Actual</p>
+                        <p class="text-3xl font-black" id="detalle-cli-deuda">S/ 0.00</p>
+                        <div id="detalle-cli-mora" class="hidden mt-2 text-xs font-black px-2 py-1 rounded"></div>
                     </div>
                 </div>
 
@@ -633,7 +661,7 @@
                     <div class="space-y-5">
                         <div class="bg-blue-50 p-3 rounded-xl border-2 border-blue-100 flex items-center shadow-inner">
                             <i class="fas fa-barcode text-blue-500 text-xl mr-3"></i>
-                            <input type="text" id="prod-codigo" class="w-full bg-transparent border-none focus:outline-none font-black text-blue-900 text-lg" placeholder="Código de barras (Opcional)">
+                            <input type="text" id="prod-codigo" class="w-full bg-transparent border-none focus:outline-none font-black text-blue-900 text-lg" placeholder="Código de barras (Opcional)" oninput="verificarCodigoExistente()">
                         </div>
 
                         <div>
@@ -728,7 +756,7 @@
         </div>
     </div>
 
-    <!-- Modal Nuevo Cliente Completo (Con DNI y DIR) -->
+    <!-- Modal Nuevo Cliente Completo -->
     <div id="modal-cliente" class="fixed inset-0 bg-slate-900/60 hidden z-[160] flex justify-center items-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden modal-pop border-4 border-blue-100 shadow-2xl">
             <div class="bg-blue-50 p-5 flex justify-between items-center border-b-2 border-blue-100">
@@ -766,6 +794,34 @@
         </div>
     </div>
     
+    <!-- Modal Registrar Egreso / Gasto (CORRECCIÓN) -->
+    <div id="modal-egreso" class="fixed inset-0 bg-slate-900/60 hidden z-[160] flex justify-center items-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden modal-pop border-4 border-red-100 shadow-2xl">
+            <div class="bg-red-50 p-5 flex justify-between items-center border-b-2 border-red-100">
+                <h3 class="font-black text-red-800 text-xl"><i class="fas fa-minus-circle mr-2"></i> Registrar Gasto</h3>
+                <button onclick="cerrarModal('modal-egreso')" class="text-red-400 bg-white rounded-full p-2 hover:text-red-600 transition-colors"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Motivo / Detalle *</label>
+                    <input type="text" id="egreso-detalle" class="w-full border-2 border-slate-200 p-3 rounded-xl font-black bg-slate-50 focus:border-red-500 focus:outline-none" placeholder="Ej. Pago a proveedor de bebidas">
+                </div>
+                <div>
+                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Monto (S/) *</label>
+                    <input type="number" id="egreso-monto" step="0.10" class="w-full border-2 border-slate-200 p-3 rounded-xl font-black bg-slate-50 focus:border-red-500 focus:outline-none text-2xl text-center text-red-600" placeholder="0.00">
+                </div>
+                <div>
+                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Método de pago</label>
+                    <select id="egreso-metodo" class="w-full border-2 border-slate-200 p-3 rounded-xl font-bold bg-white focus:border-red-500 focus:outline-none cursor-pointer text-slate-700">
+                        <option value="efectivo">Efectivo (Resta de caja física)</option>
+                        <option value="yape">Yape / Plin / Cuenta (No resta efectivo)</option>
+                    </select>
+                </div>
+                <button onclick="guardarEgreso()" class="w-full bg-red-600 text-white font-black py-4 rounded-xl text-lg mt-4 shadow-[0_5px_15px_rgba(220,38,38,0.4)] transition-transform hover:scale-105">GUARDAR GASTO</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Pago Fiado Parcial -->
     <div id="modal-pago-fiado" class="fixed inset-0 bg-slate-900/60 hidden z-[150] flex justify-center items-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden text-center modal-pop border-4 border-accent-100 shadow-2xl">
@@ -813,6 +869,32 @@
         const categoriasUnicas = ["Abarrotes", "Bebidas", "Snacks", "Lácteos", "Limpieza", "Menestras", "Perecibles/Carnes", "Verduras", "Panadería", "Otros"];
         let categoriaActivaPOS = 'Todas';
         let appIniciada = false;
+
+        // --- EFECTO DE SONIDO DE CAJA REGISTRADORA ---
+        function reproducirSonidoExito() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if(!AudioContext) return;
+                const audioCtx = new AudioContext();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.type = 'sine';
+                // Tono característico de confirmación "Bip" POS
+                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Nota La5
+                oscillator.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.1); // Salto a La6
+                
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.05); // Volumen sube
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3); // Volumen baja suave
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            } catch(e) { console.log('Audio no soportado', e); }
+        }
 
         // Redondeo Global Matemático (Ej. 14.24 -> 14.30)
         function redondearSubtotal(monto) {
@@ -1238,11 +1320,31 @@
             }
         }
 
+        // VALIDACIÓN DE MONTO EXACTO Y CÁLCULO DE VUELTO/FALTANTE
         function calcularVuelto() {
             const total = carrito.reduce((s, i) => s + redondearSubtotal(i.precio * i.cantidad), 0);
             const recibido = parseFloat(document.getElementById('monto-recibido').value) || 0;
-            if (recibido > total) { document.getElementById('monto-vuelto').innerText = fmtM(recibido - total); document.getElementById('caja-vuelto').classList.remove('hidden'); } 
-            else { document.getElementById('caja-vuelto').classList.add('hidden'); }
+            const cajaVuelto = document.getElementById('caja-vuelto');
+            const pVueltoText = document.getElementById('monto-vuelto');
+            const pVueltoLabel = document.getElementById('vuelto-label');
+
+            if (recibido > total) {
+                pVueltoLabel.innerText = "VUELTO A ENTREGAR:";
+                pVueltoText.innerText = fmtM(recibido - total);
+                pVueltoText.classList.remove('text-red-600');
+                pVueltoText.classList.add('text-blue-600');
+                cajaVuelto.classList.remove('hidden', 'bg-red-50', 'border-red-200');
+                cajaVuelto.classList.add('bg-blue-50', 'border-blue-200');
+            } else if (recibido > 0 && recibido < total) {
+                pVueltoLabel.innerText = "FALTA COBRAR:";
+                pVueltoText.innerText = fmtM(total - recibido);
+                pVueltoText.classList.remove('text-blue-600');
+                pVueltoText.classList.add('text-red-600');
+                cajaVuelto.classList.remove('hidden', 'bg-blue-50', 'border-blue-200');
+                cajaVuelto.classList.add('bg-red-50', 'border-red-200');
+            } else {
+                cajaVuelto.classList.add('hidden');
+            }
         }
 
         function calcularMixto() {
@@ -1273,8 +1375,15 @@
 
             if (metodoPagoSeleccionado === 'efectivo') {
                 const recibido = parseFloat(document.getElementById('monto-recibido').value) || 0;
+                
+                // VALIDACIÓN BLOQUEANTE: Si recibe dinero, pero es menor al total, no permitir venta
+                if (recibido > 0 && recibido < total) {
+                    uiAlert(`Falta dinero. El cliente debe pagar al menos S/ ${total.toFixed(2)}`, 'error');
+                    return;
+                }
+
                 if(recibido > total) vueltoFinal = recibido - total;
-                mEfe = total;
+                mEfe = total; // Se asume pago completo (exacto o con vuelto)
             } else if (metodoPagoSeleccionado === 'yape') { mYap = total; }
             else if (metodoPagoSeleccionado === 'fiado') {
                 const cliId = document.getElementById('fiado-select-cliente').value;
@@ -1306,7 +1415,6 @@
                 detalleTicket.push({ cantidad: item.cantidad, nombre: item.nombre || 'Sin Nombre', precio: item.precio, id: item.id });
             });
 
-            // Guardar como un solo movimiento mixto para historial limpio
             const mov = {
                 id: Date.now(), tipo: 'venta_mixta', metodo: metodoPagoSeleccionado, monto: total,
                 montoEfectivo: mEfe, montoYape: mYap, montoFiado: mFia, costoTotal: totalCosto,
@@ -1334,10 +1442,11 @@
             if(vueltoFinal > 0) { document.getElementById('exito-venta-vuelto-container').classList.remove('hidden'); document.getElementById('exito-venta-vuelto').innerText = fmtM(vueltoFinal); }
             else { document.getElementById('exito-venta-vuelto-container').classList.add('hidden'); }
             
+            reproducirSonidoExito();
             abrirModal('modal-exito-venta');
         }
 
-        // --- WHATSAPP MEJORADO (CON CODIFICACIÓN PERFECTA) ---
+        // --- WHATSAPP MEJORADO (CON CODIFICACIÓN PERFECTA Y EMOJIS UNIVERSALES) ---
         function ejecutarWhatsAppVentaUniversal() {
             const telInput = document.getElementById('exito-whatsapp-input').value.trim();
             if(!telInput && (!ultimaVenta.cliente || !ultimaVenta.cliente.telefono)) { uiAlert("Ingrese un número de celular", "error"); return; }
@@ -1345,11 +1454,12 @@
             const numEnvio = telInput || ultimaVenta.cliente.telefono;
             const nombreCliente = ultimaVenta.cliente ? ultimaVenta.cliente.nombre : "Caserito/a";
             
-            let lista = ultimaVenta.carrito.map(i => `✔️ ${i.cantidad}x ${i.nombre || ''}: S/${redondearSubtotal(i.precio*i.cantidad).toFixed(2)}`).join('\n');
-            let msjBase = `Hola *${nombreCliente}* 👋\n\nTe enviamos el detalle de tu compra en *Mi Bodega*:\n\n${lista}\n\n*Total de hoy: S/ ${ultimaVenta.total.toFixed(2)}*`;
+            let lista = ultimaVenta.carrito.map(i => `🔸 ${i.cantidad}x ${i.nombre || ''}: S/${redondearSubtotal(i.precio*i.cantidad).toFixed(2)}`).join('\n');
+            let msjBase = `Hola *${nombreCliente}* 👋\n\nAquí tienes el detalle de tu compra en *Mi Bodega* 🏪:\n\n${lista}\n\n💰 *Total de hoy: S/ ${ultimaVenta.total.toFixed(2)}*`;
             
-            if(ultimaVenta.cliente && ultimaVenta.cliente.deudaTotal > 0) { msjBase += `\n⚠️ *Tu deuda acumulada total es: S/ ${ultimaVenta.cliente.deudaTotal.toFixed(2)}*`; } 
+            if(ultimaVenta.cliente && ultimaVenta.cliente.deudaTotal > 0) { msjBase += `\n\n⚠️ *Tu deuda acumulada total es: S/ ${ultimaVenta.cliente.deudaTotal.toFixed(2)}*`; } 
             msjBase += `\n\n¡Gracias por tu preferencia! ✨`;
+            
             abrirWhatsApp(numEnvio, msjBase);
         }
 
@@ -1357,7 +1467,7 @@
 
         function enviarRecordatorioWP(cli) {
             if(cli.deudaTotal <= 0) { uiAlert("No tiene deudas.", "info"); return; }
-            const msj = `¡Hola vecinito/a *${cli.nombre}*! 👋\n\nEsperamos que estés muy bien. Te escribimos de *Mi Bodega* con mucho cariño para recordarte que tienes una cuentita pendiente de *S/ ${cli.deudaTotal.toFixed(2)}*. 📝\n\n¡Te esperamos pronto para ponernos al día! Muchas gracias por ser nuestro casero/a. ✨`;
+            const msj = `¡Hola vecinito/a *${cli.nombre}*! 👋\n\nEsperamos que estés muy bien. Te escribimos de *Mi Bodega* 🏪 para recordarte amablemente que tienes una cuentita pendiente de *S/ ${cli.deudaTotal.toFixed(2)}*. 📝\n\n¡Te esperamos pronto para ponernos al día! Muchas gracias. 🙏✨`;
             abrirWhatsApp(cli.telefono, msj);
         }
 
@@ -1409,6 +1519,37 @@
             setTipoIngreso('unidad'); abrirModal('modal-producto'); setTimeout(() => document.getElementById('prod-codigo').focus(), 100);
         }
 
+        function verificarCodigoExistente() {
+            const codigoInput = document.getElementById('prod-codigo');
+            const codigo = codigoInput.value.trim();
+            if (!codigo) return;
+            
+            const existente = inventario.find(p => p.codigo && p.codigo.toLowerCase() === codigo.toLowerCase());
+            
+            if (existente) {
+                // Si el producto existe, autocompleta y pasa a modo edición
+                document.getElementById('titulo-modal-producto').innerHTML = '<i class="fas fa-sync-alt mr-2 text-blue-500"></i> Actualizar Stock (Existente)';
+                document.getElementById('prod-id').value = existente.id;
+                document.getElementById('prod-nombre').value = existente.nombre || '';
+                document.getElementById('prod-categoria').value = existente.categoria || 'Otros';
+                document.getElementById('prod-stock').value = existente.stock || 0;
+                document.getElementById('prod-costo-total').value = ((existente.costo || 0) * (existente.stock || 0)).toFixed(2);
+                document.getElementById('prod-precio').value = existente.precio || 0;
+                document.getElementById('prod-favorito').checked = existente.favorito || false;
+                document.getElementById('prod-granel').checked = existente.granel || false;
+                
+                calcularCostos();
+                uiAlert("Producto detectado en el inventario. Listo para actualizar datos o stock.", "info");
+            } else {
+                // Si limpia el código o lee uno totalmente nuevo, nos aseguramos que el ID se limpie para no reescribir
+                const currentId = document.getElementById('prod-id').value;
+                if (currentId) {
+                    document.getElementById('titulo-modal-producto').innerHTML = '<i class="fas fa-box-open mr-2 text-brand-500"></i> Crear Producto';
+                    document.getElementById('prod-id').value = '';
+                }
+            }
+        }
+
         function editarProducto(id) {
             const prod = inventario.find(p => p.id === id); if(!prod) return;
             document.getElementById('titulo-modal-producto').innerHTML = '<i class="fas fa-pen mr-2 text-blue-500"></i> Editar Producto';
@@ -1440,98 +1581,155 @@
             [...movimientosCaja].reverse().forEach(m => {
                 const h = new Date(m.fecha).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 let colorMonto = 'text-brand-600', tipoStr = '', detalleFormateado = m.detalles;
+                
                 if(m.tipo === 'ingreso_venta' || m.tipo === 'fiado_emitido' || m.tipo === 'venta_mixta') {
                     tipoStr = m.tipo === 'fiado_emitido' ? 'Fiado' : (m.tipo === 'venta_mixta' ? 'Venta (Mixto)' : 'Venta');
                     colorMonto = m.montoFiado > 0 ? 'text-accent-500' : 'text-brand-600';
                     try { let p = JSON.parse(m.detalles); if(Array.isArray(p)) detalleFormateado = p.map(i => `<span class="bg-slate-200 px-2 py-0.5 rounded-lg text-[10px] font-black">${i.cantidad}</span> ${i.nombre}`).join('<br>'); } catch(e){}
                 } else if(m.tipo === 'egreso_caja') { tipoStr = 'Gasto ' + (m.metodo.toUpperCase()); colorMonto = 'text-red-500'; } else if(m.tipo === 'ingreso_pago_fiado') { tipoStr = 'Pago Fiado'; colorMonto = 'text-blue-500'; }
                 
-                let btnEdit = '';
-                if(m.tipo === 'ingreso_venta' || m.tipo === 'fiado_emitido' || m.tipo === 'venta_mixta') {
-                    btnEdit = `<button onclick="editarMovimiento(${m.id})" class="text-slate-300 hover:text-blue-500 ml-1 transition-colors bg-white p-2 rounded-lg shadow-sm" title="Editar (Mandar a Canasta)"><i class="fas fa-edit"></i></button>`;
-                }
-                let btnDel = `<button onclick="eliminarMovimiento(${m.id})" class="text-slate-300 hover:text-red-500 ml-1 transition-colors bg-white p-2 rounded-lg shadow-sm" title="Anular Movimiento"><i class="fas fa-trash-alt"></i></button>`;
+                let btnEdit = `<button onclick="editarMovimiento(${m.id})" class="text-slate-300 hover:text-blue-500 ml-3 transition-colors bg-white p-2 rounded-lg shadow-sm border border-slate-100" title="Editar Movimiento"><i class="fas fa-edit"></i></button>`;
+                let btnDel = `<button onclick="eliminarMovimiento(${m.id})" class="text-slate-300 hover:text-red-500 ml-1 transition-colors bg-white p-2 rounded-lg shadow-sm border border-slate-100" title="Anular Movimiento"><i class="fas fa-trash-alt"></i></button>`;
                 
-                tbody.innerHTML += `<tr><td class="py-3 px-4 font-black text-xs text-slate-400 border-b border-slate-100">${h}</td><td class="py-3 px-4 font-black uppercase text-[10px] ${colorMonto} border-b border-slate-100 tracking-widest">${tipoStr}</td><td class="py-3 px-4 text-xs leading-relaxed border-b border-slate-100">${detalleFormateado}</td><td class="py-3 px-4 text-right font-black text-lg ${colorMonto} border-b border-slate-100 flex items-center justify-end whitespace-nowrap">${fmtM(Math.abs(m.monto))} ${btnEdit} ${btnDel}</td></tr>`;
+                tbody.innerHTML += `<tr><td class="py-3 px-4 font-black text-xs text-slate-400 border-b border-slate-100">${h}</td><td class="py-3 px-4 font-black uppercase text-[10px] ${colorMonto} border-b border-slate-100 tracking-widest">${tipoStr}</td><td class="py-3 px-4 text-xs leading-relaxed border-b border-slate-100">${detalleFormateado}</td><td class="py-3 px-4 text-right font-black text-lg ${colorMonto} border-b border-slate-100 flex items-center justify-end">${fmtM(Math.abs(m.monto))} <div class="flex">${btnEdit}${btnDel}</div></td></tr>`;
             });
         }
 
-        // --- EDITAR / ELIMINAR / ANULAR MOVIMIENTOS ---
-        function revertirEfectosMovimiento(mov) {
-            // 1. Restaurar Stock
-            if(mov.tipo === 'ingreso_venta' || mov.tipo === 'fiado_emitido' || mov.tipo === 'venta_mixta') {
-                try {
-                    let items = JSON.parse(mov.detalles);
-                    if(Array.isArray(items)) {
-                        items.forEach(item => {
-                            let prod = inventario.find(p => p.id === item.id);
-                            if(prod) prod.stock += item.cantidad; // Restaura stock
-                        });
-                    }
-                } catch(e){}
-            }
+        // --- EDITAR MOVIMIENTOS EN HISTORIAL ---
+        function editarMovimiento(id) {
+            const mov = movimientosCaja.find(m => m.id === id);
+            if(!mov) return;
 
-            // 2. Restaurar Deudas
-            if((mov.tipo === 'fiado_emitido' || mov.tipo === 'venta_mixta') && mov.clienteId && mov.montoFiado > 0) {
-                let cli = clientes.find(c => c.id === mov.clienteId);
-                if(cli) cli.deudaTotal -= mov.montoFiado; // Quitar la deuda que se anotó
-            } else if (mov.tipo === 'ingreso_pago_fiado' && mov.clienteId) {
-                let cli = clientes.find(c => c.id === mov.clienteId);
-                if(cli) cli.deudaTotal += mov.monto; // Volver a sumar la deuda porque anulamos su pago
+            document.getElementById('edit-mov-id').value = mov.id;
+            document.getElementById('edit-mov-tipo').value = mov.tipo.replace(/_/g, ' ').toUpperCase();
+
+            // Formato de detalles
+            let detStr = mov.detalles;
+            try {
+                let arr = JSON.parse(mov.detalles);
+                if(Array.isArray(arr)) detStr = arr.map(i => `${i.cantidad}x ${i.nombre}`).join('\n');
+            } catch(e) {}
+            document.getElementById('edit-mov-detalle').value = detStr;
+
+            const c = document.getElementById('edit-mov-montos-container');
+            c.innerHTML = '';
+
+            if (mov.tipo === 'venta_mixta' || mov.tipo === 'ingreso_venta' || mov.tipo === 'fiado_emitido') {
+                let efe = mov.montoEfectivo !== undefined ? mov.montoEfectivo : (mov.metodo === 'efectivo' ? mov.monto : 0);
+                let yap = mov.montoYape !== undefined ? mov.montoYape : (mov.metodo === 'yape' ? mov.monto : 0);
+                let fia = mov.montoFiado !== undefined ? mov.montoFiado : (mov.tipo === 'fiado_emitido' ? mov.monto : 0);
+
+                c.innerHTML += `
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-[10px] font-black text-brand-600 uppercase mb-1">Efectivo (S/)</label>
+                        <input type="number" id="edit-mov-efe" step="0.01" class="w-full border-2 border-slate-200 p-2 rounded-xl font-black text-center text-lg text-slate-700" value="${efe}">
+                    </div>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-[10px] font-black text-purple-600 uppercase mb-1">Yape/Plin (S/)</label>
+                        <input type="number" id="edit-mov-yap" step="0.01" class="w-full border-2 border-slate-200 p-2 rounded-xl font-black text-center text-lg text-slate-700" value="${yap}">
+                    </div>
+                    ${mov.clienteId ? `
+                    <div class="col-span-2">
+                        <label class="block text-[10px] font-black text-accent-600 uppercase mb-1">Fiado Anotado (S/)</label>
+                        <input type="number" id="edit-mov-fia" step="0.01" class="w-full border-2 border-slate-200 p-2 rounded-xl font-black text-center text-lg text-slate-700" value="${fia}">
+                        <p class="text-[9px] text-red-500 font-bold mt-1 tracking-widest uppercase">*Cambiar esto ajustará la deuda actual del casero.</p>
+                    </div>` : ''}
+                `;
+            } else {
+                c.innerHTML += `
+                    <div class="col-span-2">
+                        <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Monto (S/)</label>
+                        <input type="number" id="edit-mov-monto" step="0.01" class="w-full border-2 border-slate-200 p-3 rounded-xl font-black text-center text-2xl text-slate-700" value="${Math.abs(mov.monto)}">
+                    </div>
+                `;
             }
+            abrirModal('modal-editar-movimiento');
         }
 
-        function editarMovimiento(id) {
-            if(carrito.length > 0) { uiAlert("Primero vacía tu canasta actual", "error"); return; }
-            uiConfirm("Editar Venta", "Se anulará esta transacción y los productos regresarán a tu canasta para que corrijas el cobro. ¿Deseas continuar?", () => {
+        function guardarEdicionMovimiento() {
+            const id = parseInt(document.getElementById('edit-mov-id').value);
+            const mov = movimientosCaja.find(m => m.id === id);
+            if(!mov) return;
+
+            // Manejo de detalles textuales para no romper JSON si existía
+            const rawDet = document.getElementById('edit-mov-detalle').value;
+            try {
+                let arr = JSON.parse(mov.detalles);
+                if(Array.isArray(arr)) mov.detalles = rawDet; // Fallback texto plano si se edita
+            } catch(e) { mov.detalles = rawDet; }
+
+            // Procesar los Montos
+            if (mov.tipo === 'venta_mixta' || mov.tipo === 'ingreso_venta' || mov.tipo === 'fiado_emitido') {
+                let nEfe = parseFloat(document.getElementById('edit-mov-efe').value) || 0;
+                let nYap = parseFloat(document.getElementById('edit-mov-yap').value) || 0;
+                let inputFia = document.getElementById('edit-mov-fia');
+                let nFia = inputFia ? (parseFloat(inputFia.value) || 0) : 0;
+
+                // Ajustar deuda del cliente si cambió el monto fiado original de esta venta
+                if (mov.clienteId) {
+                    let oldFia = mov.montoFiado !== undefined ? mov.montoFiado : (mov.tipo === 'fiado_emitido' ? mov.monto : 0);
+                    let diffFia = nFia - oldFia;
+                    let cli = clientes.find(c => c.id === mov.clienteId);
+                    if(cli) cli.deudaTotal += diffFia;
+                }
+
+                mov.montoEfectivo = nEfe;
+                mov.montoYape = nYap;
+                mov.montoFiado = nFia;
+                mov.monto = nEfe + nYap + nFia;
+
+                // Re-categorizar movimiento si dejó de ser mixto visualmente
+                if (nFia > 0 && nEfe === 0 && nYap === 0) { mov.tipo = 'fiado_emitido'; mov.metodo = 'fiado'; }
+                else if (nEfe > 0 && nYap === 0 && nFia === 0) { mov.tipo = 'ingreso_venta'; mov.metodo = 'efectivo'; }
+                else if (nYap > 0 && nEfe === 0 && nFia === 0) { mov.tipo = 'ingreso_venta'; mov.metodo = 'yape'; }
+                else { mov.tipo = 'venta_mixta'; mov.metodo = 'mixto'; }
+
+            } else {
+                let nMonto = parseFloat(document.getElementById('edit-mov-monto').value) || 0;
+                if(mov.tipo === 'egreso_caja') nMonto = Math.abs(nMonto);
+                
+                // Si es un abono, ajustamos la deuda actual del cliente
+                if (mov.tipo === 'ingreso_pago_fiado' && mov.clienteId) {
+                    let diffAbono = nMonto - mov.monto;
+                    let cli = clientes.find(c => c.id === mov.clienteId);
+                    // Si el abono editado es mayor (+diff), la deuda debe bajar (-diff)
+                    if(cli) cli.deudaTotal -= diffAbono;
+                }
+                mov.monto = nMonto;
+            }
+
+            guardarDatosLocales();
+            renderizarUICompleta();
+            cerrarModal('modal-editar-movimiento');
+            uiAlert("Historial actualizado correctamente", "info");
+        }
+
+        // --- ELIMINAR/ANULAR MOVIMIENTOS ---
+        function eliminarMovimiento(id) {
+            uiConfirm("Anular Transacción", "¿Seguro que deseas eliminar esto? Se restaurará el stock y se anularán pagos registrados.", () => {
                 let index = movimientosCaja.findIndex(m => m.id === id);
                 if(index === -1) return;
                 let mov = movimientosCaja[index];
 
-                revertirEfectosMovimiento(mov);
+                if(mov.tipo === 'ingreso_venta' || mov.tipo === 'fiado_emitido' || mov.tipo === 'venta_mixta') {
+                    try {
+                        let items = JSON.parse(mov.detalles);
+                        if(Array.isArray(items)) {
+                            items.forEach(item => { let prod = inventario.find(p => p.id === item.id); if(prod) prod.stock += item.cantidad; });
+                        }
+                    } catch(e){}
+                }
 
-                try {
-                    carrito = JSON.parse(mov.detalles);
-                    actualizarUIcarrito();
-                    cambiarTab('ventas');
-                } catch(e) { uiAlert("No se pudo cargar la canasta", "error"); }
-
-                movimientosCaja.splice(index, 1);
-                guardarDatosLocales(); renderizarUICompleta();
-                uiAlert("Venta lista en canasta para editar", "info");
-            });
-        }
-
-        function eliminarMovimiento(id) {
-            uiConfirm("Anular Transacción", "¿Seguro que deseas eliminar esto? Se restaurará el stock de los productos vendidos y se anularán las deudas o pagos registrados.", () => {
-                let index = movimientosCaja.findIndex(m => m.id === id);
-                if(index === -1) return;
-                
-                revertirEfectosMovimiento(movimientosCaja[index]);
+                if((mov.tipo === 'fiado_emitido' || mov.tipo === 'venta_mixta') && mov.clienteId && mov.montoFiado > 0) {
+                    let cli = clientes.find(c => c.id === mov.clienteId); if(cli) cli.deudaTotal -= mov.montoFiado; 
+                } else if (mov.tipo === 'ingreso_pago_fiado' && mov.clienteId) {
+                    let cli = clientes.find(c => c.id === mov.clienteId); if(cli) cli.deudaTotal += mov.monto; 
+                }
 
                 movimientosCaja.splice(index, 1);
                 guardarDatosLocales(); renderizarUICompleta();
                 uiAlert("Transacción eliminada con éxito", "info");
             });
-        }
-
-        function escanearEnModalProducto(e) {
-            if(e.key === 'Enter') {
-                e.preventDefault();
-                const cod = e.target.value.trim();
-                const prod = inventario.find(p => p.codigo === cod);
-                if (prod) {
-                    document.getElementById('prod-id').value = prod.id;
-                    document.getElementById('prod-nombre').value = prod.nombre;
-                    document.getElementById('prod-categoria').value = prod.categoria || 'Otros';
-                    document.getElementById('prod-precio').value = prod.precio;
-                    document.getElementById('prod-favorito').checked = prod.favorito;
-                    document.getElementById('prod-granel').checked = prod.granel;
-                    document.getElementById('titulo-modal-producto').innerHTML = '<i class="fas fa-boxes text-blue-500 mr-2"></i> Reponer Producto';
-                    document.getElementById('prod-stock').focus();
-                    uiAlert('Producto detectado. Ingrese el stock a sumar.', 'info');
-                }
-            }
         }
 
         function generarPDFCaja() {
@@ -1543,7 +1741,7 @@
                 else if (m.tipo === 'ingreso_venta' || m.tipo === 'ingreso_pago_fiado') { if(m.metodo === 'efectivo') vEfe += m.monto; if(m.metodo === 'yape') vYap += m.monto; }
                 if (m.tipo === 'egreso_caja' && m.metodo === 'efectivo') eEfe += m.monto;
                 let det = m.detalles; try{ let p = JSON.parse(det); if(Array.isArray(p)) det = p.map(i => `${i.cantidad}x ${i.nombre}`).join(', '); }catch(e){}
-                bodyData.push([h, m.tipo.replace('_', ' ').toUpperCase(), det, fmtM(Math.abs(m.monto))]);
+                bodyData.push([h, m.tipo.replace(/_/g, ' ').toUpperCase(), det, fmtM(Math.abs(m.monto))]);
             });
             doc.setFontSize(20); doc.text("Reporte de Caja - Mi Bodega", 14, 20); doc.setFontSize(12); doc.text(`Fecha: ${fechaTxt}`, 14, 30);
             doc.setFontSize(14); doc.text(`Ventas Efectivo: ${fmtM(vEfe)}`, 14, 45); doc.text(`Ventas Yape/Plin: ${fmtM(vYap)}`, 14, 52); doc.text(`Gastos Efectivo: ${fmtM(eEfe)}`, 14, 59); doc.text(`EFECTIVO EN CAJA: ${fmtM(vEfe - eEfe)}`, 14, 66);
@@ -1567,11 +1765,61 @@
             const sel2 = document.getElementById('mixto-select-cliente'); if(sel2) sel2.innerHTML = options;
         }
 
+        // CÁLCULO DE DÍAS DE MORA APROXIMADO
+        function calcularDiasDeuda(clienteId) {
+            let movs = movimientosCaja.filter(m => m.clienteId == clienteId).sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
+            let balance = 0;
+            let fechaDeudaInicial = null;
+            
+            for(let m of movs) {
+                if (m.tipo === 'fiado_emitido' || m.montoFiado > 0 || m.tipo === 'venta_mixta') {
+                    let fiaAmt = m.montoFiado !== undefined ? m.montoFiado : (m.tipo === 'fiado_emitido' ? m.monto : 0);
+                    if (fiaAmt > 0) {
+                        if (balance === 0) fechaDeudaInicial = new Date(m.fecha);
+                        balance += fiaAmt;
+                    }
+                } else if (m.tipo === 'ingreso_pago_fiado') {
+                    balance -= m.monto;
+                    if (balance <= 0) { balance = 0; fechaDeudaInicial = null; }
+                }
+            }
+            if (balance > 0 && fechaDeudaInicial) {
+                const diffTime = Math.abs(new Date() - fechaDeudaInicial);
+                return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            }
+            return 0;
+        }
+
         function renderizarClientes() {
             const grid = document.getElementById('grid-clientes'); grid.innerHTML = ''; const filtro = document.getElementById('busqueda-clientes').value.toLowerCase();
             clientes.filter(c => (c.nombre||'').toLowerCase().includes(filtro)).forEach(c => {
                 const red = c.deudaTotal > 0;
-                grid.innerHTML += `<div class="bg-white border-2 border-slate-100 p-6 rounded-[2rem] shadow-sm hover:shadow-xl transition-shadow relative overflow-hidden group"><button onclick="verDetallesCliente(${c.id})" class="absolute top-5 right-5 text-slate-300 hover:text-blue-500 transition-colors z-10" title="Ver Historial"><i class="fas fa-eye text-2xl"></i></button><h3 class="font-black text-2xl text-slate-800 tracking-tight leading-none">${c.nombre || 'Sin Nombre'}</h3><p class="text-sm font-bold text-slate-400 mt-2"><i class="fab fa-whatsapp text-green-400 mr-1"></i> ${c.telefono||'Sin número'}</p><div class="bg-${red?'red':'slate'}-50 p-5 rounded-2xl mt-5 flex justify-between items-center border border-${red?'red':'slate'}-100 shadow-inner"><span class="text-xs font-black text-${red?'red':'slate'}-400 uppercase tracking-widest">Deuda:</span><span class="text-3xl font-black ${red?'text-red-600':'text-slate-500'} tracking-tighter">${fmtM(c.deudaTotal)}</span></div><div class="flex gap-3 mt-5 relative z-10"><button onclick="abrirModalPagoFiado(${c.id})" class="flex-1 bg-accent-50 text-accent-700 font-black py-4 rounded-xl text-lg border-2 border-accent-200 hover:bg-accent-500 hover:text-white hover:border-accent-500 transition-all shadow-sm" ${!red?'disabled':''}><i class="fas fa-hand-holding-usd mr-2"></i> Recibir Pago</button></div></div>`;
+                const dias = calcularDiasDeuda(c.id);
+                const moraPeligro = dias > 15;
+                
+                // Badges y Clases dinámicas basadas en antigüedad
+                const moraWarningBadge = (red && moraPeligro) ? `<div class="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg z-20 animate-pulse border-2 border-white tracking-widest"><i class="fas fa-exclamation-triangle mr-1"></i> +${dias} DÍAS</div>` : (red && dias > 0 ? `<div class="absolute top-4 left-4 bg-amber-100 text-amber-700 text-[9px] font-black px-2 py-1 rounded-lg z-20 shadow-sm border border-amber-200 uppercase tracking-widest"><i class="fas fa-clock mr-1"></i> ${dias} días</div>` : '');
+                const colorBgDeuda = (red && moraPeligro) ? 'bg-red-100 border-red-300 shadow-[inset_0_2px_10px_rgba(220,38,38,0.2)]' : (red ? 'bg-red-50 border-red-100 shadow-inner' : 'bg-slate-50 border-slate-100 shadow-inner');
+                const colorTextoDeuda = (red && moraPeligro) ? 'text-red-700' : (red ? 'text-red-600' : 'text-slate-500');
+
+                grid.innerHTML += `
+                <div class="bg-white border-2 ${moraPeligro ? 'border-red-200 shadow-[0_5px_15px_rgba(220,38,38,0.15)]' : 'border-slate-100 shadow-sm'} p-6 rounded-[2rem] hover:shadow-xl transition-all relative overflow-hidden group">
+                    ${moraWarningBadge}
+                    <button onclick="verDetallesCliente(${c.id})" class="absolute top-5 right-5 ${moraPeligro ? 'text-red-300 hover:text-red-600' : 'text-slate-300 hover:text-blue-500'} transition-colors z-10" title="Ver Perfil Completo">
+                        <i class="fas fa-address-card text-3xl"></i>
+                    </button>
+                    <h3 class="font-black text-2xl text-slate-800 tracking-tight leading-none pt-4">${c.nombre || 'Sin Nombre'}</h3>
+                    <p class="text-sm font-bold text-slate-400 mt-2"><i class="fab fa-whatsapp text-green-400 mr-1"></i> ${c.telefono||'Sin número'}</p>
+                    
+                    <div class="${colorBgDeuda} p-5 rounded-2xl mt-5 flex justify-between items-center border">
+                        <span class="text-xs font-black ${moraPeligro ? 'text-red-500' : (red ? 'text-red-400' : 'text-slate-400')} uppercase tracking-widest">Deuda:</span>
+                        <span class="text-3xl font-black ${colorTextoDeuda} tracking-tighter">${fmtM(c.deudaTotal)}</span>
+                    </div>
+                    
+                    <div class="flex gap-3 mt-5 relative z-10">
+                        <button onclick="abrirModalPagoFiado(${c.id})" class="flex-1 bg-accent-50 text-accent-700 font-black py-4 rounded-xl text-lg border-2 border-accent-200 hover:bg-accent-500 hover:text-white hover:border-accent-500 transition-all shadow-sm" ${!red?'disabled':''}><i class="fas fa-hand-holding-usd mr-2"></i> Recibir Pago</button>
+                    </div>
+                </div>`;
             });
         }
 
@@ -1583,7 +1831,6 @@
             const nuevo = { id: Date.now(), nombre: n, telefono: t, dni: dni, direccion: dir, deudaTotal: 0, fecha: new Date().toISOString() };
             clientes.push(nuevo); renderizarUICompleta(); cerrarModal('modal-cliente'); uiAlert('Casero Registrado');
             
-            // Auto seleccionar si el modal cobro está abierto
             if(!document.getElementById('modal-cobro').classList.contains('hidden')) {
                 document.getElementById('fiado-select-cliente').value = nuevo.id;
                 document.getElementById('mixto-select-cliente').value = nuevo.id;
@@ -1593,23 +1840,67 @@
 
         function verDetallesCliente(id) {
             const cli = clientes.find(c => c.id === id); if(!cli) return;
+            
+            const dias = calcularDiasDeuda(cli.id);
+            const red = cli.deudaTotal > 0;
+            const moraPeligro = dias > 15;
+
             document.getElementById('detalle-cli-inicial').innerText = (cli.nombre || 'A').charAt(0).toUpperCase(); document.getElementById('detalle-cli-nombre').innerText = cli.nombre || 'Sin Nombre';
             document.getElementById('detalle-cli-tel').innerText = cli.telefono || 'No registrado'; document.getElementById('detalle-cli-dni').innerText = cli.dni || 'Sin DNI';
-            document.getElementById('detalle-cli-dir').innerText = cli.direccion || 'Sin Dirección'; document.getElementById('detalle-cli-deuda').innerText = fmtM(cli.deudaTotal);
+            document.getElementById('detalle-cli-dir').innerText = cli.direccion || 'Sin Dirección'; 
+            document.getElementById('detalle-cli-deuda').innerText = fmtM(cli.deudaTotal);
+            
+            const contDeuda = document.getElementById('detalle-cli-deuda-container');
+            const lblDeuda = document.getElementById('detalle-cli-deuda-label');
+            const txtDeuda = document.getElementById('detalle-cli-deuda');
+            const moraUI = document.getElementById('detalle-cli-mora');
+
+            if (moraPeligro) {
+                contDeuda.className = "flex-1 p-4 rounded-2xl border-2 text-center shadow-inner bg-red-100 border-red-300 shadow-[inset_0_2px_10px_rgba(220,38,38,0.2)]";
+                lblDeuda.className = "text-[10px] font-black uppercase tracking-widest mb-1 text-red-600";
+                txtDeuda.className = "text-3xl font-black text-red-700";
+                moraUI.classList.remove('hidden');
+                moraUI.className = "mt-2 text-xs font-black px-2 py-1 rounded bg-red-600 text-white animate-pulse border border-red-400 mx-auto inline-block uppercase tracking-widest";
+                moraUI.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Más de ${dias} días sin pagar`;
+            } else if (red) {
+                contDeuda.className = "flex-1 p-4 rounded-2xl border-2 text-center shadow-inner bg-red-50 border-red-200";
+                lblDeuda.className = "text-[10px] font-black uppercase tracking-widest mb-1 text-red-500";
+                txtDeuda.className = "text-3xl font-black text-red-600";
+                moraUI.classList.remove('hidden');
+                moraUI.className = "mt-2 text-[10px] font-black px-2 py-1 rounded bg-amber-100 text-amber-700 border border-amber-200 mx-auto inline-block uppercase tracking-widest";
+                moraUI.innerHTML = `<i class="fas fa-clock"></i> Debe hace ${dias} días`;
+            } else {
+                contDeuda.className = "flex-1 p-4 rounded-2xl border-2 text-center shadow-inner bg-green-50 border-green-200";
+                lblDeuda.className = "text-[10px] font-black uppercase tracking-widest mb-1 text-green-600";
+                txtDeuda.className = "text-3xl font-black text-green-600";
+                moraUI.classList.add('hidden');
+            }
+
             const btnCobrar = document.getElementById('btn-detalle-cobrar'); btnCobrar.onclick = () => { cerrarModal('modal-detalle-cliente'); abrirModalPagoFiado(id); };
             btnCobrar.disabled = cli.deudaTotal <= 0; btnCobrar.style.opacity = cli.deudaTotal <= 0 ? 0.5 : 1; document.getElementById('btn-detalle-recordar').onclick = () => enviarRecordatorioWP(cli);
             const histUI = document.getElementById('detalle-cli-historial'); histUI.innerHTML = '';
             
-            const misMovs = movimientosCaja.filter(m => (m.clienteId == id) || (m.tipo==='ingreso_pago_fiado' && m.detalles.includes(cli.nombre||'XXX'))).reverse();
-            if(misMovs.length === 0) histUI.innerHTML = '<p class="text-sm text-center text-slate-400 font-bold p-4">Sin historial reciente en este equipo.</p>';
+            // Mostrar historial cronológico completo de fiados y pagos del cliente
+            let misMovs = movimientosCaja.filter(m => (m.clienteId == id) || (m.tipo==='ingreso_pago_fiado' && m.detalles.includes(cli.nombre||'XXX')));
+            misMovs.sort((a,b) => new Date(b.fecha) - new Date(a.fecha)); // Más recientes primero
+
+            if(misMovs.length === 0) histUI.innerHTML = '<p class="text-sm text-center text-slate-400 font-bold p-4">Sin historial en este dispositivo.</p>';
             else {
                 misMovs.forEach(m => {
                     const d = new Date(m.fecha).toLocaleDateString() + ' ' + new Date(m.fecha).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
                     let desc = '', detalleProd = '';
-                    if (m.tipo === 'fiado_emitido' || m.montoFiado > 0) { desc = '<span class="text-accent-600 font-black">Llevó a crédito</span>'; try{ let p=JSON.parse(m.detalles); if(Array.isArray(p)) detalleProd=p.map(i=>`${i.cantidad}x ${i.nombre}`).join(', ');}catch(e){} } 
-                    else { desc = '<span class="text-blue-600 font-black">Abonó a su cuenta</span>'; }
-                    let mnt = m.montoFiado > 0 ? m.montoFiado : m.monto;
-                    histUI.innerHTML += `<div class="flex justify-between items-center p-3 border-b border-slate-200 last:border-0 hover:bg-white transition-colors"><div class="text-sm"><p>${desc}</p><p class="text-[10px] text-slate-500 line-clamp-1 leading-tight">${detalleProd}</p><p class="text-[9px] text-slate-400 font-bold mt-1">${d}</p></div><span class="font-black text-lg text-slate-700">${fmtM(mnt)}</span></div>`;
+                    if (m.tipo === 'fiado_emitido' || m.montoFiado > 0 || m.tipo === 'venta_mixta') { 
+                        let fAmt = m.montoFiado !== undefined ? m.montoFiado : (m.tipo === 'fiado_emitido' ? m.monto : 0);
+                        if(fAmt > 0) {
+                            desc = '<span class="text-accent-600 font-black"><i class="fas fa-cart-arrow-down mr-1"></i> Llevó a crédito</span>'; 
+                            try{ let p=JSON.parse(m.detalles); if(Array.isArray(p)) detalleProd=p.map(i=>`${i.cantidad}x ${i.nombre}`).join(', ');}catch(e){} 
+                            histUI.innerHTML += `<div class="flex justify-between items-center p-3 border-b border-slate-200 last:border-0 hover:bg-white transition-colors bg-accent-50/30"><div class="text-sm"><p>${desc}</p><p class="text-[10px] text-slate-500 line-clamp-2 leading-tight pr-4">${detalleProd}</p><p class="text-[9px] text-slate-400 font-bold mt-1">${d}</p></div><span class="font-black text-lg text-red-500">- ${fmtM(fAmt)}</span></div>`;
+                        }
+                    } 
+                    else if (m.tipo === 'ingreso_pago_fiado') { 
+                        desc = '<span class="text-blue-600 font-black"><i class="fas fa-hand-holding-usd mr-1"></i> Abonó a su cuenta</span>'; 
+                        histUI.innerHTML += `<div class="flex justify-between items-center p-3 border-b border-slate-200 last:border-0 hover:bg-white transition-colors bg-blue-50/50"><div class="text-sm"><p>${desc}</p><p class="text-[9px] text-slate-400 font-bold mt-1">${d}</p></div><span class="font-black text-lg text-green-600">+ ${fmtM(m.monto)}</span></div>`;
+                    }
                 });
             }
             abrirModal('modal-detalle-cliente');
