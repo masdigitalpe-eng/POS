@@ -1502,7 +1502,12 @@
             const separador = "--------------------------------\n";
             
             // Usamos EMOJIS REALES DIRECTOS para asegurar compatibilidad 100%
-            let lista = ultimaVenta.carrito.map(i => `🔸 ${i.cantidad}x ${i.nombre || ''}: S/${redondearSubtotal(i.precio*i.cantidad).toFixed(2)}`).join('\n');
+            // ACORTADOR DE TEXTO: Corta el nombre si tiene más de 24 letras
+            let lista = ultimaVenta.carrito.map(i => {
+                let nombreCorto = i.nombre || '';
+                if (nombreCorto.length > 24) nombreCorto = nombreCorto.substring(0, 21) + '...';
+                return `🔸 ${i.cantidad}x ${nombreCorto}: S/${redondearSubtotal(i.precio*i.cantidad).toFixed(2)}`;
+            }).join('\n');
             
             let msjBase = `👋 ¡Hola caserit@ *${nombreCliente}*! 🏪\n\n`; 
             msjBase += `Aquí tienes el detalle de tu compra de hoy en *Mi Bodega* 🛒:\n\n`; 
