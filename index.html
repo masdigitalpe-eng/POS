@@ -628,98 +628,110 @@
     </div>
 
     <!-- Modal Producto (Inventario) con Z-INDEX ALTO -->
-    <div id="modal-producto" class="fixed inset-0 bg-slate-900/60 hidden z-[180] flex justify-center items-center backdrop-blur-sm p-4 overflow-y-auto">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg my-8 overflow-hidden border border-slate-100 modal-pop">
-            <div class="bg-slate-50 p-5 flex justify-between items-center border-b border-slate-200">
-                <h3 class="text-2xl font-extrabold text-slate-800" id="titulo-modal-producto"><i class="fas fa-box-open text-brand-500 mr-2"></i> Crear Producto</h3>
-                <button onclick="cerrarModal('modal-producto')" class="text-slate-400 bg-white rounded-full p-2"><i class="fas fa-times text-xl"></i></button>
+    <div id="modal-producto" class="fixed inset-0 bg-slate-900/70 hidden z-[180] flex justify-center items-center backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl my-8 overflow-hidden border-4 border-slate-100 modal-pop">
+            <div class="bg-slate-50 p-6 flex justify-between items-center border-b-2 border-slate-200">
+                <h3 class="text-2xl font-black text-slate-800" id="titulo-modal-producto"><i class="fas fa-box-open text-brand-500 mr-3"></i> Crear Producto</h3>
+                <button onclick="cerrarModal('modal-producto')" class="text-slate-400 hover:text-red-500 bg-white rounded-full p-2 shadow-sm transition-colors"><i class="fas fa-times text-xl"></i></button>
             </div>
-            <div class="p-6 space-y-4">
+            
+            <div class="p-6 md:p-8">
                 <input type="hidden" id="prod-id">
                 
-                <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-center mb-2">
-                    <i class="fas fa-barcode text-blue-400 text-xl mr-3"></i>
-                    <input type="text" id="prod-codigo" class="w-full bg-transparent border-none focus:outline-none font-bold text-blue-900" placeholder="Código de barras (Opcional)">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Nombre del Producto *</label>
-                    <input type="text" id="prod-nombre" class="w-full border-2 border-slate-200 p-3 rounded-xl font-black text-slate-800 focus:border-brand-500 focus:outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Categoría</label>
-                    <select id="prod-categoria" class="w-full border-2 border-slate-200 p-3 rounded-xl font-bold bg-white focus:border-brand-500 focus:outline-none cursor-pointer">
-                        <option value="Abarrotes">Abarrotes (Arroz, Fideos, etc.)</option>
-                        <option value="Bebidas">Bebidas / Licores</option>
-                        <option value="Snacks">Snacks / Galletas</option>
-                        <option value="Lácteos">Lácteos</option>
-                        <option value="Limpieza">Limpieza / Aseo</option>
-                        <option value="Menestras">Menestras</option>
-                        <option value="Perecibles/Carnes">Perecibles / Carnes</option>
-                        <option value="Verduras">Verduras / Frutas</option>
-                        <option value="Panadería">Panadería</option>
-                        <option value="Otros">Otros</option>
-                    </select>
-                </div>
-
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                    <label class="block text-sm font-black text-slate-700 mb-3"><i class="fas fa-truck-loading text-brand-500 mr-2"></i> Forma de ingreso</label>
-                    <div class="flex gap-2 mb-4 bg-slate-200 p-1 rounded-xl">
-                        <button onclick="setTipoIngreso('unidad')" id="btn-tipo-unidad" class="flex-1 py-2 rounded-lg font-black bg-white text-brand-600 shadow-sm text-sm">Por Unidades/Kg</button>
-                        <button onclick="setTipoIngreso('paquete')" id="btn-tipo-paquete" class="flex-1 py-2 rounded-lg font-bold text-slate-500 text-sm">Por Paquetes</button>
-                    </div>
-                    
-                    <div id="zona-paquetes" class="hidden grid-cols-2 gap-3 mb-4">
-                        <div class="bg-white p-2 rounded-xl border border-slate-200">
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Paquetes</label>
-                            <input type="number" id="prod-paquetes" class="w-full bg-transparent border-none focus:outline-none text-center font-black text-lg" placeholder="0" oninput="calcularStock()">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Columna Izquierda: Identidad -->
+                    <div class="space-y-6">
+                        <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100 flex items-center shadow-inner">
+                            <i class="fas fa-barcode text-blue-500 text-2xl mr-4"></i>
+                            <input type="text" id="prod-codigo" class="w-full bg-transparent border-none focus:outline-none font-black text-blue-900 text-xl tracking-widest" placeholder="Código de barras (Opcional)">
                         </div>
-                        <div class="bg-white p-2 rounded-xl border border-slate-200">
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Unid x Paquete</label>
-                            <input type="number" id="prod-und-paquete" class="w-full bg-transparent border-none focus:outline-none text-center font-black text-lg" placeholder="0" oninput="calcularStock()">
+
+                        <div>
+                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Nombre del Producto *</label>
+                            <input type="text" id="prod-nombre" class="w-full border-4 border-slate-100 p-4 rounded-2xl font-black text-slate-800 focus:border-brand-500 focus:outline-none text-lg bg-slate-50 transition-colors">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Categoría</label>
+                            <select id="prod-categoria" class="w-full border-4 border-slate-100 p-4 rounded-2xl font-black bg-slate-50 focus:border-brand-500 focus:outline-none cursor-pointer text-lg text-slate-700 transition-colors">
+                                <option value="Abarrotes">Abarrotes (Arroz, Fideos, etc.)</option>
+                                <option value="Bebidas">Bebidas / Licores</option>
+                                <option value="Snacks">Snacks / Galletas</option>
+                                <option value="Lácteos">Lácteos</option>
+                                <option value="Limpieza">Limpieza / Aseo</option>
+                                <option value="Menestras">Menestras</option>
+                                <option value="Perecibles/Carnes">Perecibles / Carnes</option>
+                                <option value="Verduras">Verduras / Frutas</option>
+                                <option value="Panadería">Panadería</option>
+                                <option value="Otros">Otros</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-3 pt-2">
+                            <label class="flex items-center bg-slate-50 p-4 rounded-2xl border-2 border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors">
+                                <input type="checkbox" id="prod-favorito" class="h-6 w-6 text-brand-600 rounded">
+                                <span class="ml-3 text-sm font-black text-slate-700 flex-1">⭐ Mostrar en panel principal (Caja)</span>
+                            </label>
+                            <label class="flex items-center bg-orange-50 p-4 rounded-2xl border-2 border-orange-100 cursor-pointer hover:bg-orange-100 transition-colors">
+                                <input type="checkbox" id="prod-granel" class="h-6 w-6 text-orange-500 rounded">
+                                <span class="ml-3 text-sm font-black text-orange-800 flex-1">⚖️ Se vende por peso/A granel</span>
+                            </label>
                         </div>
                     </div>
-                    
-                    <div>
-                        <label class="block text-[10px] font-black text-brand-600 uppercase tracking-widest mb-1" id="label-und-sueltas">Stock Total Final</label>
-                        <input type="number" id="prod-stock" class="w-full border-2 border-brand-300 p-3 rounded-xl font-black text-2xl text-brand-700 bg-brand-50 focus:outline-none text-center" oninput="calcularCostos()" placeholder="0">
-                    </div>
-                </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-red-50 p-4 rounded-2xl border border-red-100 text-center">
-                        <label class="block text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">Costo Compra Total</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-red-400 font-bold">S/</span>
-                            <input type="number" step="0.10" id="prod-costo-total" class="w-full bg-white border-2 border-red-200 pl-8 pr-2 py-2 rounded-xl font-black text-lg focus:outline-none text-red-700" placeholder="0.00" oninput="calcularCostos()">
+                    <!-- Columna Derecha: Stock y Finanzas -->
+                    <div class="space-y-6">
+                        <div class="bg-slate-50 p-5 rounded-3xl border-2 border-slate-100 shadow-inner">
+                            <label class="block text-sm font-black text-slate-700 mb-4 uppercase tracking-widest"><i class="fas fa-truck-loading text-brand-500 mr-2"></i> Ingreso de Stock</label>
+                            <div class="flex gap-2 mb-5 bg-slate-200 p-1.5 rounded-2xl">
+                                <button onclick="setTipoIngreso('unidad')" id="btn-tipo-unidad" class="flex-1 py-3 rounded-xl font-black bg-white text-brand-600 shadow-md text-sm transition-all border-2 border-brand-200">Por Unidades/Kg</button>
+                                <button onclick="setTipoIngreso('paquete')" id="btn-tipo-paquete" class="flex-1 py-3 rounded-xl font-bold text-slate-500 text-sm hover:text-slate-700 transition-all border-2 border-transparent">Por Paquetes</button>
+                            </div>
+                            
+                            <div id="zona-paquetes" class="hidden grid-cols-2 gap-4 mb-5">
+                                <div class="bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1 text-center">Paquetes</label>
+                                    <input type="number" id="prod-paquetes" class="w-full bg-transparent border-none focus:outline-none text-center font-black text-2xl text-slate-700" placeholder="0" oninput="calcularStock()">
+                                </div>
+                                <div class="bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1 text-center">Unid x Paquete</label>
+                                    <input type="number" id="prod-und-paquete" class="w-full bg-transparent border-none focus:outline-none text-center font-black text-2xl text-slate-700" placeholder="0" oninput="calcularStock()">
+                                </div>
+                            </div>
+                            
+                            <div class="bg-brand-50 border-2 border-brand-100 p-4 rounded-2xl text-center">
+                                <label class="block text-[10px] font-black text-brand-600 uppercase tracking-widest mb-2" id="label-und-sueltas">Stock Total a Guardar</label>
+                                <input type="number" id="prod-stock" class="w-full border-none p-2 rounded-xl font-black text-5xl text-brand-700 bg-transparent focus:outline-none text-center tracking-tighter" oninput="calcularCostos()" placeholder="0">
+                            </div>
                         </div>
-                        <p class="text-[10px] font-bold text-red-500 mt-2">Sale a: <span id="label-costo-unit" class="font-black">S/ 0.00</span> c/u</p>
-                    </div>
-                    
-                    <div class="bg-green-50 p-4 rounded-2xl border border-green-200 text-center shadow-sm">
-                        <label class="block text-[10px] font-black text-green-600 uppercase tracking-widest mb-1">Precio Venta (Público)</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-green-500 font-bold">S/</span>
-                            <input type="number" step="0.10" id="prod-precio" class="w-full bg-white border-2 border-green-300 pl-8 pr-2 py-2 rounded-xl font-black text-lg focus:outline-none text-green-700" placeholder="0.00" oninput="calcularCostos()">
-                        </div>
-                        <p class="text-[10px] font-bold text-green-600 mt-2">Ganas: <span id="label-ganancia" class="font-black bg-green-200 px-1 rounded text-green-800">S/ 0.00</span> c/u</p>
-                    </div>
-                </div>
 
-                <div class="space-y-3 mt-4">
-                    <label class="flex items-center bg-slate-50 p-4 rounded-xl border border-slate-200 cursor-pointer">
-                        <input type="checkbox" id="prod-favorito" class="h-6 w-6 text-brand-600 rounded">
-                        <span class="ml-3 text-sm font-black text-slate-700 flex-1">⭐ Mostrar en panel principal (Caja)</span>
-                    </label>
-                    <label class="flex items-center bg-orange-50 p-4 rounded-xl border border-orange-200 cursor-pointer">
-                        <input type="checkbox" id="prod-granel" class="h-6 w-6 text-orange-500 rounded">
-                        <span class="ml-3 text-sm font-black text-orange-800 flex-1">⚖️ Se vende por peso/A granel</span>
-                    </label>
+                        <div class="grid grid-cols-2 gap-5">
+                            <div class="bg-red-50 p-5 rounded-3xl border-2 border-red-100 text-center shadow-inner">
+                                <label class="block text-[10px] font-black text-red-500 uppercase tracking-widest mb-3">Costo Total Compra</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-red-400 font-black text-xl">S/</span>
+                                    <input type="number" step="0.10" id="prod-costo-total" class="w-full bg-white border-4 border-red-200 pl-10 pr-2 py-3 rounded-2xl font-black text-2xl focus:outline-none focus:border-red-400 text-red-700 text-center shadow-sm" placeholder="0.00" oninput="calcularCostos()">
+                                </div>
+                                <p class="text-xs font-black text-red-500 mt-3 bg-red-100 p-2 rounded-lg">Costo Ud: <span id="label-costo-unit">S/ 0.00</span></p>
+                            </div>
+                            
+                            <div class="bg-green-50 p-5 rounded-3xl border-2 border-green-200 text-center shadow-lg transform hover:scale-105 transition-transform">
+                                <label class="block text-[10px] font-black text-green-700 uppercase tracking-widest mb-3">Precio Público (Venta)</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-green-500 font-black text-xl">S/</span>
+                                    <input type="number" step="0.10" id="prod-precio" class="w-full bg-white border-4 border-green-300 pl-10 pr-2 py-3 rounded-2xl font-black text-2xl focus:outline-none focus:border-green-500 text-green-700 text-center shadow-sm" placeholder="0.00" oninput="calcularCostos()">
+                                </div>
+                                <p class="text-xs font-black text-green-800 mt-3 bg-green-200 p-2 rounded-lg shadow-sm">Ganas: <span id="label-ganancia">S/ 0.00</span></p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="bg-white p-5 border-t border-slate-100">
-                <button onclick="guardarProducto()" class="w-full py-4 bg-brand-600 text-white font-black rounded-xl text-xl shadow-lg">Guardar Producto</button>
+            
+            <div class="bg-white p-6 border-t-2 border-slate-100 flex justify-end">
+                <button onclick="guardarProducto()" class="w-full md:w-1/2 py-5 bg-brand-600 text-white font-black rounded-2xl text-2xl shadow-[0_10px_25px_rgba(16,185,129,0.4)] transition-transform hover:scale-105 flex items-center justify-center">
+                    <i class="fas fa-save mr-3"></i> Guardar Producto
+                </button>
             </div>
         </div>
     </div>
@@ -800,7 +812,7 @@
 
     <script>
         // CRÍTICO: REEMPLAZA ESTE TEXTO CON LA URL QUE TE DIO GOOGLE APPS SCRIPT AL IMPLEMENTAR
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbySteJazeFK5t8HkJ0hDShsU-GyKvXACsQWGj08SSbajyX0NJc-usTr07Qv9cvIn0nX1g/exec';
+        const SCRIPT_URL = 'TU_NUEVO_LINK_DE_APPS_SCRIPT_AQUI';
 
         let inventario = []; 
         let clientes = [];
