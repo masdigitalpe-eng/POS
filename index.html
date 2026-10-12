@@ -79,7 +79,7 @@
     </div>
 
     <main class="flex-1 overflow-y-auto bg-slate-100 pb-20 md:pb-0 relative">
-        <div id="toast-container" class="fixed top-5 right-5 z-[120] flex flex-col gap-3 pointer-events-none"></div>
+        <div id="toast-container" class="fixed top-5 right-5 z-[160] flex flex-col gap-3 pointer-events-none"></div>
         
         <button onclick="toggleSidebar()" class="absolute top-4 left-4 z-30 bg-slate-900 border border-slate-700 text-white p-3 rounded-xl shadow-lg hover:bg-slate-800 transition-colors hidden md:block" id="btn-toggle-sidebar" style="display:none;">
             <i class="fas fa-bars"></i>
@@ -292,7 +292,7 @@
     </main>
 
     <!-- Modal Confirmación Genérica -->
-    <div id="ux-modal-confirm" class="fixed inset-0 bg-slate-900/70 hidden z-[130] flex justify-center items-center backdrop-blur-sm p-4">
+    <div id="ux-modal-confirm" class="fixed inset-0 bg-slate-900/70 hidden z-[180] flex justify-center items-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm overflow-hidden modal-pop">
             <div class="p-8 text-center">
                 <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5 border-4 border-red-100">
@@ -309,7 +309,7 @@
     </div>
 
     <!-- Modal Edición Rápida Precio -->
-    <div id="modal-edicion-rapida" class="fixed inset-0 bg-slate-900/70 hidden z-[90] flex justify-center items-center backdrop-blur-sm p-4">
+    <div id="modal-edicion-rapida" class="fixed inset-0 bg-slate-900/70 hidden z-[140] flex justify-center items-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm overflow-hidden modal-pop border-4 border-brand-100">
             <div class="bg-brand-50 p-6 flex justify-between items-center border-b-2 border-brand-100">
                 <h3 class="text-2xl font-black text-brand-800 tracking-tight"><i class="fas fa-tag mr-2"></i> Cambiar Precio</h3>
@@ -340,7 +340,7 @@
     </div>
 
     <!-- Modal Pesar Producto Granel (Calculadora Mágica) -->
-    <div id="modal-granel" class="fixed inset-0 bg-slate-900/70 hidden z-[70] flex justify-center items-center backdrop-blur-sm p-4">
+    <div id="modal-granel" class="fixed inset-0 bg-slate-900/70 hidden z-[140] flex justify-center items-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm overflow-hidden modal-pop border-4 border-orange-100">
             <div class="bg-orange-50 p-6 flex justify-between items-center border-b-2 border-orange-100">
                 <h3 class="text-2xl font-black text-orange-800 tracking-tight"><i class="fas fa-calculator mr-2"></i> Calculadora Venta</h3>
@@ -375,8 +375,8 @@
         </div>
     </div>
 
-    <!-- Modal Pausar Venta (Reemplaza prompt) -->
-    <div id="modal-pausar-nota" class="fixed inset-0 bg-slate-900/70 hidden z-[130] flex justify-center items-center backdrop-blur-sm p-4">
+    <!-- Modal Pausar Venta (Con Diseño Bonito) -->
+    <div id="modal-pausar-nota" class="fixed inset-0 bg-slate-900/70 hidden z-[140] flex justify-center items-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm overflow-hidden modal-pop border-4 border-amber-100">
             <div class="bg-amber-50 p-6 flex justify-between items-center border-b-2 border-amber-100">
                 <h3 class="text-2xl font-black text-amber-800 tracking-tight"><i class="fas fa-pause-circle mr-2"></i> Pausar Venta</h3>
@@ -396,127 +396,133 @@
         </div>
     </div>
 
-    <div id="modal-cobro" class="fixed inset-0 bg-slate-900/90 hidden z-[60] flex justify-center items-center backdrop-blur-sm p-4 overflow-y-auto">
-        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl my-8 overflow-hidden flex flex-col modal-pop">
+    <!-- Modal COBRAR MEJORADO (Más amplio, sin tanto scroll) -->
+    <div id="modal-cobro" class="fixed inset-0 bg-slate-900/90 hidden z-[140] flex justify-center items-center backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-3xl my-8 overflow-hidden flex flex-col md:flex-row modal-pop">
             
-            <div class="bg-slate-900 p-6 flex justify-between items-center">
-                <h3 class="text-3xl font-black text-white flex items-center tracking-tight"><i class="fas fa-cash-register text-brand-400 mr-3"></i> COBRAR VENTA</h3>
-                <button onclick="cerrarModal('modal-cobro')" class="text-slate-400 bg-slate-800 rounded-full p-2 hover:text-red-500 hover:bg-slate-700 transition-colors"><i class="fas fa-times text-2xl"></i></button>
+            <!-- Columna Izquierda: Total y Métodos -->
+            <div class="w-full md:w-5/12 bg-slate-50 p-8 flex flex-col border-b md:border-b-0 md:border-r border-slate-200">
+                <div class="flex justify-between items-center mb-6 md:hidden">
+                    <h3 class="text-2xl font-black text-slate-800"><i class="fas fa-cash-register text-brand-500 mr-2"></i> COBRAR</h3>
+                    <button onclick="cerrarModal('modal-cobro')" class="text-slate-400 bg-white rounded-full p-2 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+                </div>
+
+                <div class="text-center mb-8 bg-white p-8 rounded-3xl border-4 border-brand-500 shadow-lg">
+                    <p class="text-brand-600 font-black mb-2 uppercase tracking-widest text-xs">Total de la Venta</p>
+                    <p class="text-6xl font-black text-slate-800 tracking-tighter" id="modal-total-cobro">S/ 0.00</p>
+                </div>
+                
+                <h4 class="text-slate-500 font-black mb-4 uppercase tracking-widest text-xs text-center">¿Cómo va a pagar?</h4>
+                <div class="flex flex-col gap-3">
+                    <button onclick="seleccionarMetodoPago('efectivo')" id="btn-pago-efectivo" class="metodo-pago border-4 border-brand-500 bg-brand-50 text-brand-700 p-4 rounded-2xl font-black flex items-center justify-center shadow-md transition-all transform scale-105 text-lg">
+                        <i class="fas fa-money-bill-wave text-2xl mr-3 text-brand-500"></i> Efectivo
+                    </button>
+                    <button onclick="seleccionarMetodoPago('yape')" id="btn-pago-yape" class="metodo-pago border-4 border-slate-200 text-slate-400 bg-white p-4 rounded-2xl font-black flex items-center justify-center hover:bg-slate-50 transition-all text-lg">
+                        <i class="fas fa-qrcode text-2xl mr-3 text-purple-500"></i> Yape/Plin
+                    </button>
+                    <button onclick="seleccionarMetodoPago('fiado')" id="btn-pago-fiado" class="metodo-pago border-4 border-slate-200 text-slate-400 bg-white p-4 rounded-2xl font-black flex items-center justify-center hover:bg-slate-50 transition-all text-lg">
+                        <i class="fas fa-book-open text-2xl mr-3 text-accent-500"></i> Fiar
+                    </button>
+                </div>
             </div>
 
-            <div class="flex flex-col md:flex-row bg-slate-50 flex-1">
-                <div class="w-full md:w-1/2 p-8 border-b md:border-b-0 md:border-r border-slate-200 bg-white">
-                    <div class="text-center mb-8 bg-white p-8 rounded-3xl border-4 border-brand-500 shadow-lg relative overflow-hidden">
-                        <p class="text-brand-600 font-black mb-2 uppercase tracking-widest text-sm relative z-10">Total de la Venta</p>
-                        <p class="text-7xl font-black text-slate-800 tracking-tighter relative z-10" id="modal-total-cobro">S/ 0.00</p>
+            <!-- Columna Derecha: Detalles del Pago y Botón Confirmar -->
+            <div class="w-full md:w-7/12 p-8 flex flex-col justify-between bg-white relative">
+                <button onclick="cerrarModal('modal-cobro')" class="absolute top-4 right-4 text-slate-400 bg-slate-100 rounded-full p-3 hover:text-red-500 hover:bg-red-50 transition-colors hidden md:block"><i class="fas fa-times text-xl"></i></button>
+
+                <div class="mt-8 md:mt-4">
+                    <!-- SECCIÓN EFECTIVO -->
+                    <div id="seccion-efectivo" class="mb-4 transition-opacity">
+                        <label class="block text-slate-700 font-black mb-4 uppercase tracking-widest text-sm text-center"><i class="fas fa-wallet text-brand-500 mr-2"></i> ¿Con cuánto billete paga?</label>
+                        <div class="relative max-w-sm mx-auto">
+                            <span class="absolute inset-y-0 left-0 pl-6 flex items-center text-slate-400 font-black text-4xl">S/</span>
+                            <input type="number" id="monto-recibido" class="w-full pl-20 pr-6 py-6 border-4 border-slate-200 rounded-3xl text-5xl font-black focus:border-brand-500 focus:outline-none bg-slate-50 shadow-inner text-slate-800 text-center" placeholder="0.00" oninput="calcularVuelto()">
+                        </div>
+                        
+                        <div class="mt-8 max-w-sm mx-auto p-6 bg-gradient-to-r from-blue-600 to-blue-800 rounded-3xl text-center hidden shadow-xl animate-popIn" id="caja-vuelto">
+                            <p class="text-blue-200 font-black mb-2 uppercase tracking-widest text-sm">VUELTO A ENTREGAR:</p>
+                            <p class="text-6xl font-black text-white tracking-tighter" id="monto-vuelto">S/ 0.00</p>
+                        </div>
                     </div>
                     
-                    <h4 class="text-slate-500 font-black mb-4 uppercase tracking-widest text-sm text-center">¿Cómo va a pagar el cliente?</h4>
-                    <div class="grid grid-cols-3 gap-4 mb-4">
-                        <button onclick="seleccionarMetodoPago('efectivo')" id="btn-pago-efectivo" class="metodo-pago border-4 border-brand-500 bg-brand-50 text-brand-700 p-5 rounded-3xl font-black flex flex-col items-center shadow-md transition-all transform hover:scale-105">
-                            <i class="fas fa-money-bill-wave text-4xl mb-3 text-brand-500"></i> Efectivo
-                        </button>
-                        <button onclick="seleccionarMetodoPago('yape')" id="btn-pago-yape" class="metodo-pago border-4 border-slate-200 text-slate-400 bg-white p-5 rounded-3xl font-black flex flex-col items-center hover:bg-slate-50 transition-all transform hover:scale-105">
-                            <i class="fas fa-qrcode text-4xl mb-3 text-purple-500"></i> Yape/Plin
-                        </button>
-                        <button onclick="seleccionarMetodoPago('fiado')" id="btn-pago-fiado" class="metodo-pago border-4 border-slate-200 text-slate-400 bg-white p-5 rounded-3xl font-black flex flex-col items-center hover:bg-slate-50 transition-all transform hover:scale-105">
-                            <i class="fas fa-book-open text-4xl mb-3 text-accent-500"></i> Fiar
-                        </button>
+                    <!-- SECCIÓN FIADO -->
+                    <div id="seccion-fiado" class="mb-4 hidden animate-popIn">
+                        <label class="block text-accent-800 font-black mb-4 text-center uppercase tracking-widest text-sm"><i class="fas fa-user-tag text-accent-500 mr-2"></i> ¿A qué casero le fiamos?</label>
+                        <select id="fiado-select-cliente" class="w-full border-4 border-accent-200 p-5 rounded-2xl font-black text-slate-700 mb-5 bg-accent-50 focus:outline-none cursor-pointer text-lg">
+                            <option value="">-- Buscar Casero --</option>
+                        </select>
+                        <div class="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                            <span class="text-sm text-slate-500 font-black uppercase tracking-widest">¿Es un casero nuevo?</span>
+                            <button onclick="cerrarModal('modal-cobro'); abrirModalNuevoCliente();" class="text-white bg-accent-600 hover:bg-accent-700 px-5 py-3 rounded-xl font-black shadow-md text-sm transition-transform hover:scale-105"><i class="fas fa-plus mr-1"></i> Registrar</button>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN YAPE -->
+                    <div id="seccion-yape" class="mb-4 hidden animate-popIn">
+                        <div class="text-center bg-purple-50 p-8 rounded-3xl border-2 border-purple-100 mt-4">
+                            <i class="fas fa-qrcode text-6xl text-purple-400 mb-4"></i>
+                            <p class="font-black text-purple-800 text-2xl mb-2">Pago con Yape o Plin</p>
+                            <p class="text-slate-500 font-bold">Verifica el pago en tu celular antes de confirmar la venta.</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="w-full md:w-1/2 p-8 flex flex-col justify-between">
-                    <div>
-                        <div id="seccion-efectivo" class="mb-4 bg-white p-6 rounded-3xl border-2 border-slate-200 shadow-sm transition-opacity">
-                            <label class="block text-slate-700 font-black mb-4 uppercase tracking-widest text-sm text-center"><i class="fas fa-wallet text-brand-500 mr-2"></i> ¿Con cuánto billete paga?</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 pl-6 flex items-center text-slate-400 font-black text-4xl">S/</span>
-                                <input type="number" id="monto-recibido" class="w-full pl-20 pr-6 py-6 border-4 border-slate-200 rounded-3xl text-5xl font-black focus:border-brand-500 focus:outline-none bg-slate-50 shadow-inner text-slate-800" placeholder="0.00" oninput="calcularVuelto()">
-                            </div>
-                            
-                            <div class="mt-6 p-6 bg-gradient-to-r from-blue-600 to-blue-800 rounded-3xl text-center hidden shadow-xl animate-popIn" id="caja-vuelto">
-                                <p class="text-blue-200 font-black mb-2 uppercase tracking-widest text-sm">VUELTO A ENTREGAR:</p>
-                                <p class="text-6xl font-black text-white tracking-tighter" id="monto-vuelto">S/ 0.00</p>
-                            </div>
-                        </div>
-                        
-                        <div id="seccion-fiado" class="mb-4 bg-white p-6 rounded-3xl border-2 border-accent-200 hidden shadow-sm animate-popIn">
-                            <label class="block text-accent-800 font-black mb-4 text-center uppercase tracking-widest text-sm"><i class="fas fa-user-tag text-accent-500 mr-2"></i> ¿A qué casero le fiamos?</label>
-                            <select id="fiado-select-cliente" class="w-full border-4 border-accent-200 p-5 rounded-2xl font-black text-slate-700 mb-5 bg-accent-50 focus:outline-none cursor-pointer text-lg">
-                                <option value="">-- Buscar Casero --</option>
-                            </select>
-                            <div class="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                                <span class="text-sm text-slate-500 font-black uppercase tracking-widest">¿Es un casero nuevo?</span>
-                                <button onclick="abrirModalNuevoCliente()" class="text-white bg-accent-600 hover:bg-accent-700 px-5 py-3 rounded-xl font-black shadow-md text-sm transition-transform hover:scale-105"><i class="fas fa-plus mr-1"></i> Registrar</button>
-                            </div>
-                        </div>
-
-                        <div id="seccion-yape" class="mb-4 bg-white p-6 rounded-3xl border-2 border-purple-200 hidden shadow-sm animate-popIn">
-                            <div class="text-center mb-4">
-                                <i class="fas fa-qrcode text-6xl text-purple-400 mb-2"></i>
-                                <p class="font-black text-purple-800 text-lg">Pago con Yape o Plin</p>
-                                <p class="text-sm text-slate-500 font-bold mt-1">Verifica el pago en tu celular antes de confirmar.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-8">
-                        <button onclick="procesarVenta()" class="w-full bg-brand-600 text-white font-black py-6 rounded-3xl text-3xl shadow-[0_10px_30px_rgba(16,185,129,0.4)] hover:bg-brand-700 transition-transform hover:scale-105 tracking-tight"><i class="fas fa-check-circle mr-3"></i> CONFIRMAR VENTA</button>
-                    </div>
+                <div class="mt-8">
+                    <button onclick="procesarVenta()" class="w-full bg-brand-600 text-white font-black py-6 rounded-3xl text-2xl shadow-[0_10px_30px_rgba(16,185,129,0.4)] hover:bg-brand-700 transition-transform hover:scale-105 tracking-tight uppercase"><i class="fas fa-check-circle mr-3"></i> Confirmar Venta</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Éxito Venta (Universal) -->
-    <div id="modal-exito-venta" class="fixed inset-0 bg-slate-900/90 hidden z-[100] flex justify-center items-center backdrop-blur-md p-4">
-        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden text-center modal-pop border-4 border-brand-500">
-            <div class="bg-brand-500 p-10 text-white relative overflow-hidden" id="exito-header-bg">
-                <i class="fas fa-check-circle text-8xl mb-4 relative z-10 drop-shadow-lg" id="exito-icono"></i>
-                <h3 class="text-4xl font-black relative z-10 tracking-tight" id="exito-titulo">¡Venta Exitosa!</h3>
-                <p class="font-bold text-brand-100 mt-2 relative z-10 text-lg" id="exito-subtitulo">La transacción ha sido guardada.</p>
+    <!-- Modal Éxito Venta (Universal) MÁS PEQUEÑO -->
+    <div id="modal-exito-venta" class="fixed inset-0 bg-slate-900/90 hidden z-[150] flex justify-center items-center backdrop-blur-md p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden text-center modal-pop border-2 border-brand-500">
+            <div class="bg-brand-500 p-6 text-white relative overflow-hidden" id="exito-header-bg">
+                <i class="fas fa-check-circle text-6xl mb-2 relative z-10 drop-shadow-lg" id="exito-icono"></i>
+                <h3 class="text-2xl font-black relative z-10 tracking-tight" id="exito-titulo">¡Venta Exitosa!</h3>
+                <p class="font-bold text-brand-100 mt-1 relative z-10 text-sm" id="exito-subtitulo">La transacción ha sido guardada.</p>
             </div>
             
-            <div class="p-8">
-                <div id="exito-info-fiado" class="hidden mb-6">
+            <div class="p-6">
+                <div id="exito-info-fiado" class="hidden mb-4">
                     <p class="text-slate-400 font-black text-xs uppercase tracking-widest mb-1">Se sumó a la cuenta de:</p>
-                    <h4 class="text-3xl font-black text-slate-800 mb-6 leading-none" id="exito-fiado-nombre">Cliente</h4>
-                    <div class="bg-red-50 p-6 rounded-3xl border-2 border-red-100 shadow-inner">
-                        <p class="text-xs font-black text-red-500 uppercase tracking-widest mb-2">Su deuda total ahora es</p>
-                        <p class="text-5xl font-black text-red-600 tracking-tighter" id="exito-fiado-deuda">S/ 0.00</p>
+                    <h4 class="text-xl font-black text-slate-800 mb-4 leading-none" id="exito-fiado-nombre">Cliente</h4>
+                    <div class="bg-red-50 p-4 rounded-2xl border-2 border-red-100 shadow-inner">
+                        <p class="text-xs font-black text-red-500 uppercase tracking-widest mb-1">Su deuda total ahora es</p>
+                        <p class="text-3xl font-black text-red-600 tracking-tighter" id="exito-fiado-deuda">S/ 0.00</p>
                     </div>
                 </div>
 
-                <div id="exito-info-venta" class="mb-6">
-                    <div class="bg-slate-50 p-6 rounded-3xl border-2 border-slate-100 shadow-inner">
-                        <p class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Total Pagado</p>
-                        <p class="text-5xl font-black text-slate-800 tracking-tighter" id="exito-venta-total">S/ 0.00</p>
+                <div id="exito-info-venta" class="mb-4">
+                    <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-100 shadow-inner">
+                        <p class="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Total Pagado</p>
+                        <p class="text-3xl font-black text-slate-800 tracking-tighter" id="exito-venta-total">S/ 0.00</p>
                     </div>
-                    <div id="exito-venta-vuelto-container" class="mt-4 hidden text-center p-4 bg-blue-50 border border-blue-100 rounded-2xl">
-                        <p class="text-xs font-black text-blue-500 uppercase tracking-widest mb-1">Vuelto Entregado</p>
-                        <p class="text-3xl font-black text-blue-700" id="exito-venta-vuelto">S/ 0.00</p>
+                    <div id="exito-venta-vuelto-container" class="mt-3 hidden text-center p-3 bg-blue-50 border border-blue-100 rounded-xl">
+                        <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1">Vuelto Entregado</p>
+                        <p class="text-2xl font-black text-blue-700" id="exito-venta-vuelto">S/ 0.00</p>
                     </div>
                 </div>
                 
-                <div class="bg-[#e8fbf0] border-2 border-[#25D366] rounded-2xl p-5 mb-6 text-left">
-                    <label class="block text-xs font-black text-[#128c7e] uppercase tracking-widest mb-2"><i class="fab fa-whatsapp mr-1"></i> Enviar Recibo al Cliente</label>
+                <div class="bg-[#e8fbf0] border-2 border-[#25D366] rounded-xl p-4 mb-4 text-left">
+                    <label class="block text-[10px] font-black text-[#128c7e] uppercase tracking-widest mb-2"><i class="fab fa-whatsapp mr-1"></i> Enviar Ticket por WhatsApp</label>
                     <div class="flex gap-2">
-                        <input type="tel" id="exito-whatsapp-input" class="flex-1 border-2 border-[#25D366] p-4 rounded-xl font-black text-slate-700 focus:outline-none" placeholder="Celular (Opcional)">
-                        <button onclick="ejecutarWhatsAppVentaUniversal()" class="bg-[#25D366] hover:bg-[#1ebe5d] text-white px-6 rounded-xl shadow-lg transition-transform hover:scale-105">
-                            <i class="fas fa-paper-plane text-xl"></i>
+                        <input type="tel" id="exito-whatsapp-input" class="flex-1 border-2 border-[#25D366] p-3 rounded-lg font-black text-slate-700 focus:outline-none text-sm" placeholder="Celular (Opcional)">
+                        <button onclick="ejecutarWhatsAppVentaUniversal()" class="bg-[#25D366] hover:bg-[#1ebe5d] text-white px-5 rounded-lg shadow-md transition-transform hover:scale-105">
+                            <i class="fas fa-paper-plane text-lg"></i>
                         </button>
                     </div>
                 </div>
 
-                <button onclick="cerrarVentaFinal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-black py-5 rounded-2xl text-xl flex items-center justify-center transition-colors">
-                    Siguiente Cliente <i class="fas fa-arrow-right ml-3"></i>
+                <button onclick="cerrarVentaFinal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-black py-4 rounded-xl text-lg flex items-center justify-center transition-colors">
+                    Siguiente Venta <i class="fas fa-arrow-right ml-2"></i>
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Modal Detalle Cliente -->
-    <div id="modal-detalle-cliente" class="fixed inset-0 bg-slate-900/70 hidden z-[70] flex justify-center items-center backdrop-blur-sm p-4">
+    <div id="modal-detalle-cliente" class="fixed inset-0 bg-slate-900/70 hidden z-[140] flex justify-center items-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh] modal-pop border-4 border-blue-100">
             <div class="bg-blue-50 p-6 flex justify-between items-center border-b-2 border-blue-100">
                 <h3 class="text-2xl font-black text-blue-800 flex items-center tracking-tight"><i class="fas fa-address-book text-blue-500 mr-3"></i> Perfil del Casero</h3>
@@ -552,7 +558,7 @@
         </div>
     </div>
 
-    <div id="modal-pago-fiado" class="fixed inset-0 bg-slate-900/80 hidden z-[80] flex justify-center items-center backdrop-blur-sm p-4">
+    <div id="modal-pago-fiado" class="fixed inset-0 bg-slate-900/80 hidden z-[150] flex justify-center items-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-[2rem] w-full max-w-sm overflow-hidden text-center modal-pop border-4 border-accent-100 shadow-2xl">
             <div class="bg-accent-50 p-6 flex justify-between items-center border-b-2 border-accent-100">
                 <h3 class="font-black text-accent-800 text-2xl tracking-tight"><i class="fas fa-hand-holding-usd mr-2"></i> Recibir Pago</h3>
@@ -582,7 +588,8 @@
         </div>
     </div>
 
-    <div id="modal-cliente" class="fixed inset-0 bg-slate-900/80 hidden z-[75] flex justify-center items-center backdrop-blur-sm p-4">
+    <!-- Modal Registro Cliente Ampliado -->
+    <div id="modal-cliente" class="fixed inset-0 bg-slate-900/80 hidden z-[160] flex justify-center items-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden modal-pop border-4 border-blue-100">
             <div class="bg-blue-50 p-6 flex justify-between items-center border-b-2 border-blue-100">
                 <h3 class="font-black text-blue-800 text-2xl tracking-tight"><i class="fas fa-user-plus mr-2"></i> Registrar Casero</h3>
@@ -620,8 +627,8 @@
         </div>
     </div>
 
-    <!-- Modal Producto (Inventario) -->
-    <div id="modal-producto" class="fixed inset-0 bg-slate-900/60 hidden z-[50] flex justify-center items-center backdrop-blur-sm p-4 overflow-y-auto">
+    <!-- Modal Producto (Inventario) con Z-INDEX ALTO -->
+    <div id="modal-producto" class="fixed inset-0 bg-slate-900/60 hidden z-[180] flex justify-center items-center backdrop-blur-sm p-4 overflow-y-auto">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg my-8 overflow-hidden border border-slate-100 modal-pop">
             <div class="bg-slate-50 p-5 flex justify-between items-center border-b border-slate-200">
                 <h3 class="text-2xl font-extrabold text-slate-800" id="titulo-modal-producto"><i class="fas fa-box-open text-brand-500 mr-2"></i> Crear Producto</h3>
@@ -718,7 +725,7 @@
     </div>
 
     <!-- Modal Gastos -->
-    <div id="modal-egreso" class="fixed inset-0 bg-slate-900/80 hidden z-[60] flex justify-center items-center backdrop-blur-sm p-4">
+    <div id="modal-egreso" class="fixed inset-0 bg-slate-900/80 hidden z-[140] flex justify-center items-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm overflow-hidden modal-pop border-4 border-red-100">
             <div class="bg-red-50 p-6 flex justify-between items-center border-b-2 border-red-100">
                 <h3 class="text-2xl font-black text-red-800 tracking-tight"><i class="fas fa-minus-circle mr-2"></i> Retirar Dinero</h3>
@@ -748,7 +755,7 @@
     </div>
 
     <!-- Modal Ventas Pausadas -->
-    <div id="modal-pausadas" class="fixed inset-0 bg-slate-900/80 hidden z-[85] flex justify-center items-center backdrop-blur-sm p-4">
+    <div id="modal-pausadas" class="fixed inset-0 bg-slate-900/80 hidden z-[140] flex justify-center items-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden modal-pop border-4 border-amber-100">
             <div class="bg-amber-50 p-6 flex justify-between items-center border-b-2 border-amber-100">
                 <h3 class="text-2xl font-black text-amber-800 tracking-tight"><i class="fas fa-clock mr-2"></i> Ventas en Espera</h3>
@@ -761,7 +768,7 @@
     </div>
 
     <!-- Modal Historial Cierres de Caja -->
-    <div id="modal-historial-cierres" class="fixed inset-0 bg-slate-900/80 hidden z-[85] flex justify-center items-center backdrop-blur-sm p-4">
+    <div id="modal-historial-cierres" class="fixed inset-0 bg-slate-900/80 hidden z-[140] flex justify-center items-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl overflow-hidden modal-pop border-4 border-blue-100">
             <div class="bg-slate-800 p-6 flex justify-between items-center">
                 <h3 class="text-2xl font-black text-white tracking-tight"><i class="fas fa-history text-brand-400 mr-2"></i> Historial de Cierres</h3>
@@ -793,7 +800,7 @@
 
     <script>
         // CRÍTICO: REEMPLAZA ESTE TEXTO CON LA URL QUE TE DIO GOOGLE APPS SCRIPT AL IMPLEMENTAR
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJEudUbVEVf2B4jmcqX1QdOBn1D0DCkXJc0y4ZfGz3BpkFtyfd1OSpsOWoE-2rgB-_6w/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbySteJazeFK5t8HkJ0hDShsU-GyKvXACsQWGj08SSbajyX0NJc-usTr07Qv9cvIn0nX1g/exec';
 
         let inventario = []; 
         let clientes = [];
@@ -841,7 +848,7 @@
             const toast = document.createElement('div');
             let bg = tipo === 'error' ? 'bg-red-500' : (tipo === 'info' ? 'bg-blue-500' : 'bg-brand-500');
             let icon = tipo === 'error' ? 'fa-times-circle' : (tipo === 'info' ? 'fa-info-circle' : 'fa-check-circle');
-            toast.className = `${bg} text-white px-6 py-4 rounded-2xl shadow-xl flex items-center alert-toast font-black z-[120]`;
+            toast.className = `${bg} text-white px-6 py-4 rounded-2xl shadow-xl flex items-center alert-toast font-black z-[200]`;
             toast.innerHTML = `<i class="fas ${icon} text-2xl mr-3 opacity-80"></i> <span>${mensaje}</span>`;
             container.appendChild(toast);
             setTimeout(() => { toast.style.animation = 'slideInRight 0.5s reverse forwards'; setTimeout(() => toast.remove(), 500); }, 3000);
@@ -1223,20 +1230,20 @@
 
         function seleccionarMetodoPago(metodo) {
             metodoPagoSeleccionado = metodo;
-            document.querySelectorAll('.metodo-pago').forEach(b => b.className = 'metodo-pago border-4 border-slate-200 text-slate-400 bg-white p-5 rounded-3xl font-black flex flex-col items-center hover:bg-slate-50 transition-all transform hover:scale-105');
+            document.querySelectorAll('.metodo-pago').forEach(b => b.className = 'metodo-pago border-4 border-slate-200 text-slate-400 bg-white p-4 rounded-2xl font-black flex items-center justify-center hover:bg-slate-50 transition-all text-lg');
             document.getElementById('seccion-efectivo').classList.add('hidden');
             document.getElementById('seccion-fiado').classList.add('hidden');
             document.getElementById('seccion-yape').classList.add('hidden');
 
             const btn = document.getElementById(`btn-pago-${metodo}`);
             if (metodo === 'efectivo') {
-                btn.className = 'metodo-pago border-4 border-brand-500 bg-brand-50 text-brand-700 p-5 rounded-3xl font-black flex flex-col items-center shadow-md transition-all transform scale-105'; 
+                btn.className = 'metodo-pago border-4 border-brand-500 bg-brand-50 text-brand-700 p-4 rounded-2xl font-black flex items-center justify-center shadow-md transition-all transform scale-105 text-lg'; 
                 document.getElementById('seccion-efectivo').classList.remove('hidden'); setTimeout(() => document.getElementById('monto-recibido').focus(), 50);
             } else if (metodo === 'yape') {
-                btn.className = 'metodo-pago border-4 border-purple-500 bg-purple-50 text-purple-700 p-5 rounded-3xl font-black flex flex-col items-center shadow-md transition-all transform scale-105';
+                btn.className = 'metodo-pago border-4 border-purple-500 bg-purple-50 text-purple-700 p-4 rounded-2xl font-black flex items-center justify-center shadow-md transition-all transform scale-105 text-lg';
                 document.getElementById('seccion-yape').classList.remove('hidden');
             } else if (metodo === 'fiado') {
-                btn.className = 'metodo-pago border-4 border-accent-500 bg-accent-50 text-accent-700 p-5 rounded-3xl font-black flex flex-col items-center shadow-md transition-all transform scale-105'; 
+                btn.className = 'metodo-pago border-4 border-accent-500 bg-accent-50 text-accent-700 p-4 rounded-2xl font-black flex items-center justify-center shadow-md transition-all transform scale-105 text-lg'; 
                 document.getElementById('seccion-fiado').classList.remove('hidden');
             }
         }
@@ -1287,16 +1294,16 @@
             const btnWp = document.getElementById('exito-whatsapp-input'); btnWp.value = '';
             
             if (metodoPagoSeleccionado === 'fiado') {
-                document.getElementById('exito-header-bg').className = "bg-accent-500 p-10 text-white relative overflow-hidden";
-                document.getElementById('exito-icono').className = "fas fa-book-open text-8xl mb-4 relative z-10 drop-shadow-lg";
+                document.getElementById('exito-header-bg').className = "bg-accent-500 p-6 text-white relative overflow-hidden";
+                document.getElementById('exito-icono').className = "fas fa-book-open text-6xl mb-2 relative z-10 drop-shadow-lg";
                 document.getElementById('exito-titulo').innerText = "¡Fiado Guardado!"; document.getElementById('exito-subtitulo').innerText = "Venta anotada en su cuenta.";
                 
                 document.getElementById('exito-info-fiado').classList.remove('hidden'); document.getElementById('exito-info-venta').classList.add('hidden');
                 document.getElementById('exito-fiado-nombre').innerText = cliSeleccionado.nombre; document.getElementById('exito-fiado-deuda').innerText = fmtM(cliSeleccionado.deudaTotal);
                 if(cliSeleccionado.telefono) btnWp.value = cliSeleccionado.telefono;
             } else {
-                document.getElementById('exito-header-bg').className = "bg-brand-500 p-10 text-white relative overflow-hidden";
-                document.getElementById('exito-icono').className = "fas fa-check-circle text-8xl mb-4 relative z-10 drop-shadow-lg";
+                document.getElementById('exito-header-bg').className = "bg-brand-500 p-6 text-white relative overflow-hidden";
+                document.getElementById('exito-icono').className = "fas fa-check-circle text-6xl mb-2 relative z-10 drop-shadow-lg";
                 document.getElementById('exito-titulo').innerText = "¡Venta Exitosa!"; document.getElementById('exito-subtitulo').innerText = "El ingreso ha sido registrado.";
                 
                 document.getElementById('exito-info-fiado').classList.add('hidden'); document.getElementById('exito-info-venta').classList.remove('hidden');
@@ -1342,8 +1349,8 @@
 
         function setTipoIngreso(tipo) {
             tipoIngresoActual = tipo; const bU = document.getElementById('btn-tipo-unidad'); const bP = document.getElementById('btn-tipo-paquete'); const zP = document.getElementById('zona-paquetes'); const inStock = document.getElementById('prod-stock');
-            if (tipo === 'unidad') { bU.className = 'flex-1 py-3 rounded-xl font-black bg-white text-brand-600 shadow-sm text-sm border-2 border-brand-200 transition-all'; bP.className = 'flex-1 py-3 rounded-xl font-bold text-slate-500 text-sm hover:bg-slate-300 transition-all border-2 border-transparent'; zP.classList.add('hidden'); inStock.readOnly = false; } 
-            else { bP.className = 'flex-1 py-3 rounded-xl font-black bg-white text-brand-600 shadow-sm text-sm border-2 border-brand-200 transition-all'; bU.className = 'flex-1 py-3 rounded-xl font-bold text-slate-500 text-sm hover:bg-slate-300 transition-all border-2 border-transparent'; zP.classList.remove('hidden'); inStock.readOnly = true; }
+            if (tipo === 'unidad') { bU.className = 'flex-1 py-2 rounded-lg font-black bg-white text-brand-600 shadow-sm text-sm border-2 border-brand-200 transition-all'; bP.className = 'flex-1 py-2 rounded-lg font-bold text-slate-500 text-sm hover:bg-slate-300 transition-all border-2 border-transparent'; zP.classList.add('hidden'); inStock.readOnly = false; } 
+            else { bP.className = 'flex-1 py-2 rounded-lg font-black bg-white text-brand-600 shadow-sm text-sm border-2 border-brand-200 transition-all'; bU.className = 'flex-1 py-2 rounded-lg font-bold text-slate-500 text-sm hover:bg-slate-300 transition-all border-2 border-transparent'; zP.classList.remove('hidden'); inStock.readOnly = true; }
             calcularStock();
         }
 
@@ -1376,10 +1383,12 @@
         function filtrarInventario() { renderizarInventario(); }
 
         function abrirModalProducto() {
-            document.getElementById('titulo-modal-producto').innerHTML = '<i class="fas fa-box-open mr-2 text-brand-500"></i> Registrar Producto';
-            ['prod-id', 'prod-codigo', 'prod-nombre', 'prod-stock', 'prod-costo-total', 'prod-precio', 'prod-paquetes', 'prod-und-paquete'].forEach(id => document.getElementById(id).value = '');
-            document.getElementById('prod-categoria').value = 'Abarrotes'; document.getElementById('prod-favorito').checked = false; document.getElementById('prod-granel').checked = false;
-            setTipoIngreso('unidad'); abrirModal('modal-producto'); setTimeout(() => document.getElementById('prod-codigo').focus(), 100);
+            try {
+                document.getElementById('titulo-modal-producto').innerHTML = '<i class="fas fa-box-open mr-2 text-brand-500"></i> Registrar Producto';
+                ['prod-id', 'prod-codigo', 'prod-nombre', 'prod-stock', 'prod-costo-total', 'prod-precio', 'prod-paquetes', 'prod-und-paquete'].forEach(id => document.getElementById(id).value = '');
+                document.getElementById('prod-categoria').value = 'Abarrotes'; document.getElementById('prod-favorito').checked = false; document.getElementById('prod-granel').checked = false;
+                setTipoIngreso('unidad'); abrirModal('modal-producto'); setTimeout(() => document.getElementById('prod-codigo').focus(), 100);
+            } catch(e) { console.error("Error abriendo modal producto", e); }
         }
 
         function editarProducto(id) {
@@ -1395,8 +1404,8 @@
         function guardarProducto() {
             const id = document.getElementById('prod-id').value;
             const data = { codigo: document.getElementById('prod-codigo').value.trim() || 'S/C', nombre: document.getElementById('prod-nombre').value.trim().toUpperCase(), categoria: document.getElementById('prod-categoria').value, stock: parseFloat(document.getElementById('prod-stock').value) || 0, costoTotal: parseFloat(document.getElementById('prod-costo-total').value) || 0, precio: parseFloat(document.getElementById('prod-precio').value) || 0, favorito: document.getElementById('prod-favorito').checked, granel: document.getElementById('prod-granel').checked };
-            if(!data.nombre || data.stock <= 0 || data.costoTotal <= 0 || data.precio <= 0) { uiAlert('Por favor revise Nombre, Stock, Costo y Precio.', 'error'); return; }
-            data.costo = data.costoTotal / data.stock;
+            if(!data.nombre || data.stock < 0 || data.costoTotal < 0 || data.precio <= 0) { uiAlert('Por favor revise Nombre, Stock, Costo y Precio.', 'error'); return; }
+            data.costo = data.stock > 0 ? data.costoTotal / data.stock : 0;
             if (id) { const i = inventario.findIndex(p => p.id == id); if(i !== -1) { data.id = parseInt(id); inventario[i] = { ...inventario[i], ...data }; } } else { data.id = Date.now(); inventario.push(data); }
             renderizarUICompleta(); cerrarModal('modal-producto'); uiAlert('Producto guardado con éxito'); enviarDatosAGoogleSheets('producto_actualizado', data);
         }
