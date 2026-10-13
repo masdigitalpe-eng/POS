@@ -194,7 +194,7 @@
                                 <th class="py-4 px-4 text-right">Costo Uni.</th>
                                 <th class="py-4 px-4 text-right">Precio Venta</th>
                                 <th class="py-4 px-4 text-right text-brand-600">Ganancia</th>
-                                <th class="py-4 px-4 text-center">Editar</th>
+                                <th class="py-4 px-4 text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-inventario" class="text-slate-700 text-sm font-semibold divide-y divide-slate-100"></tbody>
@@ -375,6 +375,41 @@
             </div>
             <div class="bg-white p-5 border-t border-slate-100">
                 <button onclick="guardarEdicionRapida()" class="w-full py-4 bg-brand-600 text-white rounded-xl hover:bg-brand-700 font-black text-xl shadow-[0_5px_15px_rgba(16,185,129,0.3)]">Guardar Precio</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Precio en Canasta -->
+    <div id="modal-precio-canasta" class="fixed inset-0 bg-slate-900/70 hidden z-[150] flex justify-center items-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden modal-pop border-2 border-brand-200">
+            <div class="bg-brand-50 p-5 flex justify-between items-center border-b border-brand-100">
+                <h3 class="text-xl font-black text-brand-800"><i class="fas fa-edit mr-2"></i> Precio en Canasta</h3>
+                <button onclick="cerrarModal('modal-precio-canasta')" class="text-brand-400 hover:text-brand-600 bg-white rounded-full p-2 shadow-sm"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="p-6 text-center">
+                <p class="text-slate-400 font-black text-xs uppercase tracking-widest mb-1">Producto en canasta</p>
+                <h4 class="text-2xl font-black text-slate-800 mb-4" id="canasta-edit-nombre">Producto</h4>
+
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div>
+                        <label class="block text-left text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Precio Unit. (S/)</label>
+                        <input type="number" id="canasta-edit-precio" step="0.10" class="w-full border-4 border-brand-200 p-3 rounded-xl text-2xl text-center font-black focus:outline-none focus:border-brand-500 text-brand-700" placeholder="0.00" oninput="onInputPrecioCanasta()">
+                    </div>
+                    <div>
+                        <label class="block text-left text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Subtotal (S/)</label>
+                        <input type="number" id="canasta-edit-subtotal" step="0.10" class="w-full border-4 border-slate-200 p-3 rounded-xl text-2xl text-center font-black focus:outline-none focus:border-brand-500 text-slate-700" placeholder="0.00" oninput="onInputSubtotalCanasta()">
+                    </div>
+                </div>
+
+                <label class="flex items-center bg-slate-50 p-3 rounded-xl border border-slate-200 cursor-pointer text-left mt-2">
+                    <input type="checkbox" id="canasta-guardar-bd" class="h-5 w-5 text-brand-600 rounded">
+                    <span class="ml-3 text-xs font-black text-slate-600 flex-1">Actualizar también este precio en la Base de Datos (Inventario)</span>
+                </label>
+
+                <input type="hidden" id="canasta-edit-index">
+            </div>
+            <div class="bg-white p-5 border-t border-slate-100">
+                <button onclick="guardarPrecioCanasta()" class="w-full py-4 bg-brand-600 text-white rounded-xl hover:bg-brand-700 font-black text-xl shadow-[0_5px_15px_rgba(16,185,129,0.3)]">Aplicar Precio</button>
             </div>
         </div>
     </div>
@@ -743,8 +778,11 @@
                 </div>
             </div>
             
-            <div class="bg-white p-5 border-t-2 border-slate-100 flex justify-end">
-                <button onclick="guardarProducto()" class="w-full md:w-1/2 py-4 bg-brand-600 text-white font-black rounded-xl text-xl shadow-[0_8px_20px_rgba(16,185,129,0.3)] transition-transform hover:scale-105">Guardar Producto</button>
+            <div class="bg-white p-5 border-t-2 border-slate-100 flex flex-col sm:flex-row justify-between gap-3">
+                <button id="btn-eliminar-modal-prod" onclick="eliminarProductoDesdeModal()" class="hidden py-4 px-6 bg-red-50 text-red-600 hover:bg-red-500 hover:text-white font-black rounded-xl text-lg transition-colors border-2 border-red-200">
+                    <i class="fas fa-trash-alt mr-2"></i> Eliminar Producto
+                </button>
+                <button onclick="guardarProducto()" class="w-full sm:w-1/2 ml-auto py-4 bg-brand-600 text-white font-black rounded-xl text-xl shadow-[0_8px_20px_rgba(16,185,129,0.3)] transition-transform hover:scale-105">Guardar Producto</button>
             </div>
         </div>
     </div>
@@ -874,7 +912,7 @@
 
     <script>
         // CRÍTICO: REEMPLAZA ESTE TEXTO CON LA URL QUE TE DIO GOOGLE APPS SCRIPT AL IMPLEMENTAR
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkAHBspTv1-nQuTp2K7iJDgzXE4NhjNO0AkwUhHV-QeiYgCjOR4HA9mUaE0XCbVNxsUA/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbySteJazeFK5t8HkJ0hDShsU-GyKvXACsQWGj08SSbajyX0NJc-usTr07Qv9cvIn0nX1g/exec';
 
         let inventario = []; 
         let clientes = [];
@@ -939,16 +977,13 @@
         }
 
         window.onload = function() {
-            // Ya NO cargamos el historial (b_mov) del almacenamiento local. Todo vendrá de la Base de Datos.
-            // Solo las ventas pausadas (carritos a medias) se quedan en local porque aún no son ventas reales confirmadas.
-            const savedPausadas = localStorage.getItem('b_pausadas'); if(savedPausadas) ventasPausadas = JSON.parse(savedPausadas);
-
+            // Todo se lee 100% desde la Base de Datos (Google Sheets). No se utiliza localStorage.
             setTimeout(() => {
                 if(!appIniciada) {
                     document.getElementById('loading-text').innerText = "Demora en Google. Obteniendo datos...";
                     arrancarAppOffline();
                 }
-            }, 8000); // Le damos 8 segundos de espera para descargar los historiales de ventas que suelen pesar más
+            }, 8000);
 
             if (SCRIPT_URL && SCRIPT_URL !== 'TU_NUEVO_LINK_DE_APPS_SCRIPT_AQUI') {
                 fetch(SCRIPT_URL + "?accion=obtenerDatosIniciales")
@@ -962,9 +997,8 @@
                         // CARGAMOS ABSOLUTAMENTE TODO DE LA BASE DE DATOS (GOOGLE SHEETS)
                         if(dbRemota && dbRemota.inventario) inventario = dbRemota.inventario;
                         if(dbRemota && dbRemota.clientes) clientes = dbRemota.clientes;
-                        
-                        // NUEVO: Cargar el historial de caja (ventas, egresos, abonos) directo desde la BD
                         if(dbRemota && dbRemota.movimientos) movimientosCaja = dbRemota.movimientos;
+                        if(dbRemota && dbRemota.ventasPausadas) ventasPausadas = dbRemota.ventasPausadas;
 
                         arrancarAppOffline();
                     })
@@ -1004,7 +1038,7 @@
         }
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('sidebar-collapsed'); }
-        function guardarDatosLocales() { localStorage.setItem('b_mov', JSON.stringify(movimientosCaja)); localStorage.setItem('b_pausadas', JSON.stringify(ventasPausadas)); }
+        function guardarDatosLocales() { /* Desactivado: Todo se guarda y lee directamente de la Base de Datos */ }
         function abrirModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function cerrarModal(id) { document.getElementById(id).classList.add('hidden'); }
         function fmtM(monto) { return `S/ ${parseFloat(monto || 0).toFixed(2)}`; }
@@ -1284,6 +1318,79 @@
             if(item) { item.cantidad += delta; if(item.cantidad <= 0) carrito = carrito.filter(i => !(i.id === id && i.precio === precio)); actualizarUIcarrito(); }
         }
 
+        function eliminarItemCarrito(index) {
+            carrito.splice(index, 1);
+            actualizarUIcarrito();
+        }
+
+        function abrirEditarPrecioCanasta(index) {
+            const item = carrito[index];
+            if (!item) return;
+            document.getElementById('canasta-edit-index').value = index;
+            document.getElementById('canasta-edit-nombre').innerText = `${item.nombre} (Cant: ${Number.isInteger(item.cantidad) ? item.cantidad : item.cantidad.toFixed(2)})`;
+            document.getElementById('canasta-edit-precio').value = parseFloat(item.precio).toFixed(2);
+            document.getElementById('canasta-edit-subtotal').value = redondearSubtotal(item.precio * item.cantidad).toFixed(2);
+            document.getElementById('canasta-guardar-bd').checked = false;
+            abrirModal('modal-precio-canasta');
+            setTimeout(() => {
+                const inp = document.getElementById('canasta-edit-precio');
+                inp.focus();
+                inp.select();
+            }, 100);
+        }
+
+        function onInputPrecioCanasta() {
+            const index = parseInt(document.getElementById('canasta-edit-index').value);
+            const item = carrito[index];
+            if (!item) return;
+            const nuevoPrecio = parseFloat(document.getElementById('canasta-edit-precio').value) || 0;
+            if (nuevoPrecio > 0) {
+                document.getElementById('canasta-edit-subtotal').value = redondearSubtotal(nuevoPrecio * item.cantidad).toFixed(2);
+            } else {
+                document.getElementById('canasta-edit-subtotal').value = '';
+            }
+        }
+
+        function onInputSubtotalCanasta() {
+            const index = parseInt(document.getElementById('canasta-edit-index').value);
+            const item = carrito[index];
+            if (!item || item.cantidad <= 0) return;
+            const nuevoSubtotal = parseFloat(document.getElementById('canasta-edit-subtotal').value) || 0;
+            if (nuevoSubtotal > 0) {
+                document.getElementById('canasta-edit-precio').value = (nuevoSubtotal / item.cantidad).toFixed(2);
+            } else {
+                document.getElementById('canasta-edit-precio').value = '';
+            }
+        }
+
+        function guardarPrecioCanasta() {
+            const index = parseInt(document.getElementById('canasta-edit-index').value);
+            const item = carrito[index];
+            if (!item) return;
+
+            const nuevoPrecio = parseFloat(document.getElementById('canasta-edit-precio').value);
+            if (!nuevoPrecio || nuevoPrecio <= 0) {
+                uiAlert('Ingrese un precio válido mayor a 0', 'error');
+                return;
+            }
+
+            item.precio = nuevoPrecio;
+
+            // Si marcó actualizar también en el inventario y base de datos
+            if (document.getElementById('canasta-guardar-bd').checked) {
+                const prodInv = inventario.find(p => p.id === item.id);
+                if (prodInv) {
+                    prodInv.precio = nuevoPrecio;
+                    enviarDatosAGoogleSheets('producto_actualizado', prodInv);
+                }
+            }
+
+            actualizarUIcarrito();
+            renderizarUICompleta();
+            cerrarModal('modal-precio-canasta');
+            uiAlert('Precio actualizado en la canasta');
+        }
+
         function actualizarUIcarrito() {
             const contenedor = document.getElementById('carrito-items'); const totalUI = document.getElementById('carrito-total'); const btnCobrar = document.getElementById('btn-cobrar'); let total = 0;
 
@@ -1294,11 +1401,33 @@
 
             contenedor.innerHTML = ''; btnCobrar.disabled = false; btnCobrar.className = 'w-full bg-brand-600 text-white py-4 rounded-xl font-black text-2xl flex justify-center items-center shadow-lg transition-transform hover:scale-105';
 
-            [...carrito].reverse().forEach(item => {
+            for (let idx = carrito.length - 1; idx >= 0; idx--) {
+                const item = carrito[idx];
                 let subtotal = redondearSubtotal(item.precio * item.cantidad); total += subtotal;
                 const txtCant = Number.isInteger(item.cantidad) ? item.cantidad : item.cantidad.toFixed(2);
-                contenedor.innerHTML += `<div class="flex justify-between items-center p-3 mb-2 bg-white rounded-2xl shadow-sm border border-slate-100 transform transition-all hover:scale-[1.02]"><div class="flex-1 pr-2"><p class="font-black text-sm text-slate-800 leading-tight">${item.nombre}</p><p class="text-[10px] font-black text-brand-500 uppercase tracking-widest mt-1">${fmtM(item.precio)} ${item.granel ? 'x Kg/Und' : 'c/u'}</p></div><div class="flex flex-col items-end gap-1"><span class="font-black text-lg text-slate-800">${fmtM(subtotal)}</span><div class="flex bg-slate-100 rounded-lg p-1 border border-slate-200"><button onclick="cambiarCantidadCarrito(${item.id}, ${item.precio}, -1)" class="w-6 h-6 bg-white text-slate-600 font-black rounded shadow-sm hover:text-brand-500">-</button><span class="w-8 flex items-center justify-center font-black text-xs">${txtCant}</span><button onclick="cambiarCantidadCarrito(${item.id}, ${item.precio}, 1)" class="w-6 h-6 bg-white text-slate-600 font-black rounded shadow-sm hover:text-brand-500">+</button></div></div></div>`;
-            });
+                contenedor.innerHTML += `
+                <div class="flex justify-between items-center p-3 mb-2 bg-white rounded-2xl shadow-sm border border-slate-100 transform transition-all hover:scale-[1.01]">
+                    <div class="flex-1 pr-2">
+                        <p class="font-black text-sm text-slate-800 leading-tight">${item.nombre}</p>
+                        <div class="flex items-center gap-2 mt-1">
+                            <button onclick="abrirEditarPrecioCanasta(${idx})" class="text-[11px] font-black text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 px-2 py-0.5 rounded-lg flex items-center gap-1 transition-colors" title="Editar precio de venta">
+                                <i class="fas fa-pen text-[9px]"></i> ${fmtM(item.precio)} ${item.granel ? 'x Kg/Und' : 'c/u'}
+                            </button>
+                            <button onclick="eliminarItemCarrito(${idx})" class="text-slate-300 hover:text-red-500 text-xs px-1 transition-colors" title="Quitar de la canasta">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-1">
+                        <span onclick="abrirEditarPrecioCanasta(${idx})" class="font-black text-lg text-slate-800 cursor-pointer hover:text-brand-600" title="Clic para cambiar precio">${fmtM(subtotal)}</span>
+                        <div class="flex bg-slate-100 rounded-lg p-1 border border-slate-200">
+                            <button onclick="cambiarCantidadCarrito(${item.id}, ${item.precio}, -1)" class="w-6 h-6 bg-white text-slate-600 font-black rounded shadow-sm hover:text-brand-500">-</button>
+                            <span class="w-8 flex items-center justify-center font-black text-xs">${txtCant}</span>
+                            <button onclick="cambiarCantidadCarrito(${item.id}, ${item.precio}, 1)" class="w-6 h-6 bg-white text-slate-600 font-black rounded shadow-sm hover:text-brand-500">+</button>
+                        </div>
+                    </div>
+                </div>`;
+            }
             totalUI.innerText = fmtM(total); contenedor.scrollTop = 0;
         }
 
@@ -1312,8 +1441,9 @@
         function confirmarPausarVenta() {
             const nota = document.getElementById('pausa-nota-input').value.trim() || 'Sin referencia';
             const total = carrito.reduce((s, i) => s + redondearSubtotal(i.precio * i.cantidad), 0); 
-            ventasPausadas.push({ id: Date.now(), nota: nota, carrito: [...carrito], total: total, fecha: new Date().toLocaleTimeString() });
-            carrito = []; actualizarUIcarrito(); guardarDatosLocales(); actualizarUIVentasPausadas(); cerrarModal('modal-pausar-nota'); uiAlert("Canasta guardada en espera", "info");
+            const nuevaPausa = { id: Date.now(), nota: nota, carrito: [...carrito], total: total, fecha: new Date().toLocaleTimeString() };
+            ventasPausadas.push(nuevaPausa);
+            carrito = []; actualizarUIcarrito(); enviarDatosAGoogleSheets('pausar_venta', nuevaPausa); actualizarUIVentasPausadas(); cerrarModal('modal-pausar-nota'); uiAlert("Canasta guardada en espera", "info");
         }
 
         function actualizarUIVentasPausadas() {
@@ -1330,9 +1460,9 @@
         function recuperarVentaPausada(id) {
             if(carrito.length > 0) { uiAlert("Primero vacía la canasta actual", "error"); return; }
             const index = ventasPausadas.findIndex(v => v.id === id);
-            if(index !== -1) { carrito = [...ventasPausadas[index].carrito]; ventasPausadas.splice(index, 1); actualizarUIcarrito(); guardarDatosLocales(); actualizarUIVentasPausadas(); cerrarModal('modal-pausadas'); }
+            if(index !== -1) { carrito = [...ventasPausadas[index].carrito]; ventasPausadas.splice(index, 1); actualizarUIcarrito(); enviarDatosAGoogleSheets('eliminar_venta_pausada', { id: id }); actualizarUIVentasPausadas(); cerrarModal('modal-pausadas'); }
         }
-        function eliminarVentaPausada(id) { ventasPausadas = ventasPausadas.filter(v => v.id !== id); guardarDatosLocales(); actualizarUIVentasPausadas(); if(ventasPausadas.length === 0) cerrarModal('modal-pausadas'); else abrirModalPausadas(); }
+        function eliminarVentaPausada(id) { ventasPausadas = ventasPausadas.filter(v => v.id !== id); enviarDatosAGoogleSheets('eliminar_venta_pausada', { id: id }); actualizarUIVentasPausadas(); if(ventasPausadas.length === 0) cerrarModal('modal-pausadas'); else abrirModalPausadas(); }
 
         // --- SISTEMA DE COBRO MIXTO E INTELIGENTE ---
         function abrirModalCobro() {
@@ -1635,16 +1765,54 @@
             }).forEach(prod => {
                 const color = prod.stock <= 5 ? 'text-red-600 bg-red-100 border-red-200' : 'text-slate-700 bg-slate-100 border-slate-200';
                 const tag = prod.granel ? `<span class="bg-orange-100 text-orange-600 text-[9px] px-2 py-0.5 rounded-md ml-2 font-black border border-orange-200">KG</span>` : '';
-                tbody.innerHTML += `<tr class="hover:bg-slate-50 transition-colors border-b-2 border-slate-100"><td class="py-4 px-4 text-center font-mono text-[10px] text-slate-400 font-bold">${prod.codigo || 'S/C'}</td><td class="py-4 px-4 font-black text-slate-800 tracking-tight">${prod.nombre || 'Sin Nombre'} ${prod.favorito?'<span class="text-amber-400 text-xs ml-1" title="Favorito">⭐</span>':''} ${tag}<p class="text-[9px] text-brand-500 uppercase tracking-widest mt-1 font-bold">${prod.categoria || 'Otros'}</p></td><td class="py-4 px-4 text-center"><span class="px-4 py-2 rounded-xl text-sm font-black border ${color}">${prod.stock}</span></td><td class="py-4 px-4 text-right font-bold text-slate-500">${fmtM(prod.costo)}</td><td class="py-4 px-4 text-right font-black text-brand-600 text-lg">${fmtM(prod.precio)}</td><td class="py-4 px-4 text-right text-green-500 font-black">+${fmtM(prod.precio - prod.costo)}</td><td class="py-4 px-4 text-center"><button onclick="editarProducto(${prod.id})" class="text-blue-500 hover:text-white bg-blue-50 hover:bg-blue-500 p-3 rounded-xl transition-all shadow-sm"><i class="fas fa-pen"></i></button></td></tr>`;
+                tbody.innerHTML += `
+                <tr class="hover:bg-slate-50 transition-colors border-b-2 border-slate-100">
+                    <td class="py-4 px-4 text-center font-mono text-[10px] text-slate-400 font-bold">${prod.codigo || 'S/C'}</td>
+                    <td class="py-4 px-4 font-black text-slate-800 tracking-tight">${prod.nombre || 'Sin Nombre'} ${prod.favorito?'<span class="text-amber-400 text-xs ml-1" title="Favorito">⭐</span>':''} ${tag}<p class="text-[9px] text-brand-500 uppercase tracking-widest mt-1 font-bold">${prod.categoria || 'Otros'}</p></td>
+                    <td class="py-4 px-4 text-center"><span class="px-4 py-2 rounded-xl text-sm font-black border ${color}">${prod.stock}</span></td>
+                    <td class="py-4 px-4 text-right font-bold text-slate-500">${fmtM(prod.costo)}</td>
+                    <td class="py-4 px-4 text-right font-black text-brand-600 text-lg">${fmtM(prod.precio)}</td>
+                    <td class="py-4 px-4 text-right text-green-500 font-black">+${fmtM(prod.precio - prod.costo)}</td>
+                    <td class="py-4 px-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="editarProducto(${prod.id})" class="text-blue-500 hover:text-white bg-blue-50 hover:bg-blue-500 p-3 rounded-xl transition-all shadow-sm" title="Editar Producto"><i class="fas fa-pen"></i></button>
+                            <button onclick="eliminarProducto(${prod.id})" class="text-red-500 hover:text-white bg-red-50 hover:bg-red-500 p-3 rounded-xl transition-all shadow-sm" title="Eliminar Producto"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </td>
+                </tr>`;
             });
         }
         function filtrarInventario() { renderizarInventario(); }
+
+        function eliminarProducto(id) {
+            const prod = inventario.find(p => p.id === id);
+            if (!prod) return;
+            uiConfirm(
+                'Eliminar Producto',
+                `¿Estás seguro de que deseas eliminar "${prod.nombre}" del inventario y de la Base de Datos?`,
+                () => {
+                    inventario = inventario.filter(p => p.id !== id);
+                    carrito = carrito.filter(i => i.id !== id);
+                    actualizarUIcarrito();
+                    renderizarUICompleta();
+                    cerrarModal('modal-producto');
+                    uiAlert('Producto eliminado de la Base de Datos', 'info');
+                    enviarDatosAGoogleSheets('producto_eliminado', { id: prod.id, codigo: prod.codigo, nombre: prod.nombre });
+                }
+            );
+        }
+
+        function eliminarProductoDesdeModal() {
+            const id = parseInt(document.getElementById('prod-id').value);
+            if (id) eliminarProducto(id);
+        }
 
         function abrirModalProducto() {
             document.getElementById('titulo-modal-producto').innerHTML = '<i class="fas fa-box-open mr-2 text-brand-500"></i> Registrar Producto';
             ['prod-id', 'prod-codigo', 'prod-nombre', 'prod-stock-kilos', 'prod-costo-kilo', 'prod-cant-cajas', 'prod-peso-caja', 'prod-costo-caja', 'prod-precio'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('prod-categoria').value = 'Abarrotes'; document.getElementById('prod-favorito').checked = false; document.getElementById('prod-granel').checked = false;
             document.getElementById('sugerencias-modal-producto').classList.add('hidden');
+            document.getElementById('btn-eliminar-modal-prod').classList.add('hidden');
             setModoIngreso('basico'); abrirModal('modal-producto'); setTimeout(() => document.getElementById('prod-codigo').focus(), 100);
         }
 
@@ -1691,6 +1859,7 @@
             document.getElementById('prod-categoria').value = p.categoria || 'Otros';
             document.getElementById('prod-favorito').checked = p.favorito || false;
             document.getElementById('prod-granel').checked = p.granel || false;
+            document.getElementById('btn-eliminar-modal-prod').classList.remove('hidden');
             
             // Llenar datos de precio/costos para edición en modo básico
             setModoIngreso('basico');
@@ -1720,6 +1889,7 @@
             document.getElementById('prod-nombre').value = prod.nombre; document.getElementById('prod-categoria').value = prod.categoria || 'Otros';
             document.getElementById('prod-favorito').checked = prod.favorito; document.getElementById('prod-granel').checked = prod.granel || false;
             document.getElementById('sugerencias-modal-producto').classList.add('hidden');
+            document.getElementById('btn-eliminar-modal-prod').classList.remove('hidden');
             
             setModoIngreso('basico');
             document.getElementById('prod-stock-kilos').value = prod.stock || 0;
@@ -1885,6 +2055,7 @@
             renderizarUICompleta();
             cerrarModal('modal-editar-movimiento');
             uiAlert("Historial actualizado correctamente", "info");
+            enviarDatosAGoogleSheets('movimiento_actualizado', mov);
         }
 
         // --- ELIMINAR/ANULAR MOVIMIENTOS ---
@@ -1912,6 +2083,7 @@
                 movimientosCaja.splice(index, 1);
                 guardarDatosLocales(); renderizarUICompleta();
                 uiAlert("Transacción eliminada con éxito", "info");
+                enviarDatosAGoogleSheets('movimiento_eliminado', { id: mov.id, movimiento: mov });
             });
         }
 
